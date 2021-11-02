@@ -1,0 +1,44 @@
+{
+  "name": "discord-bot-example",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "description": "Discord Bot Example",
+  "keywords": [
+    "discord.js",
+    "discord",
+    "bot",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christiantochen/discord-bot-example.git"
+  },
+  "author": "Christianto Chen",
+  "license": "MIT",
+  "homepage": "https://github.com/christiantochen/discord-bot-example.git#readme",
+  "scripts": {
+    "dev": "nodemon ./src/index.ts",
+    "start": "ts-node ./src/index.ts",
+    "release": "tsc && nodemon ."
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.8.2",
+    "@discordjs/opus": "^0.6.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "@discordjs/voice": "^0.7.2",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "ffmpeg-static": "^4.4.0",
+    "flat": "^5.0.2",
+    "libsodium-wrappers": "^0.7.9",
+    "moment": "^2.29.1",
+    "play-dl": "^1.2.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  },
+  "engines": {
+    "node": "16.6"
+  }
+}
