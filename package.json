@@ -1,5 +1,5 @@
 {
-  "name": "discord-bot-example",
+  "name": "discord-music-bot",
   "version": "0.0.1",
   "main": "src/index.js",
   "description": "Discord Bot Example",
@@ -11,15 +11,16 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christiantochen/discord-bot-example.git"
+    "url": "git+https://github.com/christiantochen/discord-music-bot.git"
   },
   "author": "Christianto Chen",
   "license": "MIT",
-  "homepage": "https://github.com/christiantochen/discord-bot-example.git#readme",
+  "homepage": "https://github.com/christiantochen/discord-music-botg.git#readme",
   "scripts": {
-    "dev": "nodemon ./src/index.ts",
-    "start": "ts-node ./src/index.ts",
-    "release": "tsc && nodemon ."
+    "dev": "nodemon ./src/index.ts set NODE_ENV=dev",
+    "start": "node .",
+    "build": "./node_modules/typescript/bin/tsc",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@discordjs/builders": "^0.8.2",
@@ -36,7 +37,9 @@
     "play-dl": "^1.2.8"
   },
   "devDependencies": {
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
   },
   "engines": {
     "node": "16.6"

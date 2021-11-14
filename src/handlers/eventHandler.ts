@@ -19,7 +19,9 @@ export default class EventHandler extends Collection<string, Event> {
   private async init() {
     const path = join(__dirname, "..", "events");
 
-    const eventFiles = getAllFiles(path).filter((file) => file.endsWith(".ts"));
+    const eventFiles = getAllFiles(path).filter((file) =>
+      file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
+    );
 
     eventFiles.forEach((file) => {
       const eventClass = ((r) => r.default || r)(require(file));

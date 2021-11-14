@@ -26,7 +26,9 @@ export default class SlashCommandHandler extends Collection<
     const folder = "slashCommands";
     const path = join(__dirname, "..", folder);
 
-    const files = getAllFiles(path).filter((file) => file.endsWith(".ts"));
+    const files = getAllFiles(path).filter((file) =>
+      file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
+    );
 
     files.forEach((file) => {
       const commandClass = ((r) => r.default || r)(require(file));

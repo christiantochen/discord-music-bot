@@ -6,11 +6,15 @@ export const getFixture = (fixture: string, options?: any) => {
   let filePath = `./${fixtures[0]}`;
 
   if (
-    !filePath.endsWith(".ts") &&
+    !filePath.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts") &&
     fs.existsSync(filePath) &&
-    !fs.lstatSync(`${filePath}/index.ts`).isFile()
+    !fs
+      .lstatSync(
+        `${filePath}/index${process.env.NODE_ENV === "production" ? ".js" : ".ts"}`
+      )
+      .isFile()
   )
-    filePath += ".ts";
+    filePath += process.env.NODE_ENV === "production" ? ".js" : ".ts";
 
   let fixtureClass = ((f) => f.default || f)(require(filePath));
 

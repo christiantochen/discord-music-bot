@@ -4,4 +4,4 @@ public
 .DS_Store
 .env
 dist/
-.js
+*.js
