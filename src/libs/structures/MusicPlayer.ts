@@ -20,17 +20,21 @@ export default class MusicPlayer extends AudioPlayer {
   voiceChannelId: string | undefined;
   current: AudioResource | undefined;
   queues: AudioResource[] = [];
+  // queueAt: number = 0;
   mode: "off" | "current" | "all" = "off";
+  idleTimer: number = 60000;
 
   private connection: VoiceConnection | undefined;
   private subscription: PlayerSubscription | undefined;
   private forcedNext: boolean = false;
+  private timeout: NodeJS.Timeout | undefined;
 
   constructor(client: NClient, guildId: string) {
     super({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
     this.client = client;
     this.guildId = guildId;
 
+    this.on(AudioPlayerStatus.Playing, this.onPlay);
     this.on(AudioPlayerStatus.Idle, this.onIdle);
     this.on("error", console.error);
   }
@@ -113,6 +117,14 @@ export default class MusicPlayer extends AudioPlayer {
     return audio.metadata;
   }
 
+  private async onPlay(): Promise<void> {
+    if (this.timeout) {
+      console.log("music_player:on_play:clear_timeout");
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
+    }
+  }
+
   private async onIdle(): Promise<void> {
     if (this.current) {
       if (this.mode === "current") {
@@ -121,6 +133,10 @@ export default class MusicPlayer extends AudioPlayer {
         this.current = undefined;
         await this.next();
       }
+    } else {
+      console.log("music_player:on_idle:set_timeout");
+      this.current = undefined;
+      this.timeout = setTimeout(this.disconnect, this.idleTimer);
     }
   }
 
