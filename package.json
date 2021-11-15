@@ -1,13 +1,14 @@
 {
   "name": "discord-music-bot",
   "version": "0.0.1",
-  "main": "src/index.js",
-  "description": "Discord Bot Example",
+  "main": "dist/index.js",
+  "description": "Discord Music Bot",
   "keywords": [
-    "discord.js",
+    "discordjs",
+    "typescript",
     "discord",
     "bot",
-    "typescript"
+    "music bot"
   ],
   "repository": {
     "type": "git",
@@ -15,9 +16,9 @@
   },
   "author": "Christianto Chen",
   "license": "MIT",
-  "homepage": "https://github.com/christiantochen/discord-music-botg.git#readme",
+  "homepage": "https://github.com/christiantochen/discord-music-bot.git#readme",
   "scripts": {
-    "dev": "nodemon ./src/index.ts set NODE_ENV=dev",
+    "dev": "nodemon ./src/index.ts",
     "start": "node .",
     "build": "./node_modules/typescript/bin/tsc",
     "postinstall": "npm run build"
