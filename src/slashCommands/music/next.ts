@@ -21,7 +21,7 @@ export default class Next extends MusicPlayerSlashCommand {
         getFixture("music:METADATA", metadata)
       );
     } else {
-      message.setDescription(getFixture("music:UP_NEXT"));
+      message.setDescription(getFixture("music:LAST_SONG"));
     }
 
     return interaction.editReply({ embeds: [message] });
