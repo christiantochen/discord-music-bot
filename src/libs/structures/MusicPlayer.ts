@@ -40,9 +40,12 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   connect(voiceChannel: VoiceChannel, memberChannel: TextChannel) {
-    if (this.voiceChannelId && this.voiceChannelId === voiceChannel.id)
+    if (this.voiceChannelId && this.voiceChannelId === voiceChannel.id) {
+      console.log("music_player:connect", "existing");
       return this.subscription;
+    }
 
+    console.log("music_player:connect", "new");
     this.channelId = memberChannel.id;
     this.voiceChannelId = voiceChannel.id;
 
@@ -56,6 +59,7 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   disconnect(): void {
+    console.log("music_player:disconnect");
     this.queues = [];
     this.current = undefined;
 
@@ -71,6 +75,7 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   setRepeatMode(mode: string) {
+    console.log("music_player:setRepeatMode", mode);
     switch (mode) {
       case "off":
       case "current":
@@ -86,15 +91,21 @@ export default class MusicPlayer extends AudioPlayer {
       this.current = await createAudio(this.current.metadata);
       this.play(this.current);
       await this.send(getFixture("music:NOW_PLAYING"), this.current.metadata);
+
+      console.log("music_player:restart", true);
       return true;
     }
+
+    console.log("music_player:restart", false);
     return false;
   }
 
   async queue(audio: AudioResource): Promise<number> {
     if (this.current) {
+      console.log("music_player:queue:push", (audio.metadata as any)?.title);
       this.queues.push(audio);
     } else {
+      console.log("music_player:queue:play", (audio.metadata as any)?.title);
       this.current = audio;
       this.play(audio);
     }
@@ -111,13 +122,16 @@ export default class MusicPlayer extends AudioPlayer {
     this.current = audio;
     this.play(audio);
 
-    if (!this.forcedNext)
+    console.log("music_player:next:forced", this.forcedNext);
+
+    if (!this.forcedNext) {
       await this.send(getFixture("music:NOW_PLAYING"), audio.metadata);
+    }
 
     return audio.metadata;
   }
 
-  private async onPlay(): Promise<void> {
+  private async onPlay() {
     if (this.timeout) {
       console.log("music_player:on_play:clear_timeout");
       clearTimeout(this.timeout);
@@ -125,18 +139,20 @@ export default class MusicPlayer extends AudioPlayer {
     }
   }
 
-  private async onIdle(): Promise<void> {
+  private async onIdle() {
     if (this.current) {
       if (this.mode === "current") {
+        console.log("music_player:on_idle:restart", this.mode);
         await this.restart();
       } else {
         this.current = undefined;
-        await this.next();
+        const next = await this.next();
+        console.log("music_player:on_idle:next", !!next);
+        if (!next) {
+          console.log("music_player:on_idle:set_timeout", this.idleTimer);
+          this.timeout = setTimeout(() => this.disconnect(), this.idleTimer);
+        }
       }
-    } else {
-      console.log("music_player:on_idle:set_timeout");
-      this.current = undefined;
-      this.timeout = setTimeout(this.disconnect, this.idleTimer);
     }
   }
 
