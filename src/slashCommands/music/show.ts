@@ -10,27 +10,56 @@ export default class Show extends MusicPlayerSlashCommand {
     const { valid, errorMessage } = await this.validate(member, player);
 
     if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
+    let prevTracks: any[] | undefined;
+    let nextTracks: any[] | undefined;
 
-    const message = new NMesssageEmbed();
+    if (player!.trackAt === -1) {
+      nextTracks = player?.tracks;
+    } else if (player!.trackAt === 0) {
+      nextTracks = player!.tracks.slice(1);
+    } else if (player!.trackAt === player!.tracks.length) {
+      prevTracks = player!.tracks.slice(0, player!.trackAt - 1);
+    } else {
+      prevTracks = player!.tracks.slice(0, player!.trackAt);
+      nextTracks = player!.tracks.slice(player!.trackAt + 1);
+    }
 
-    message.addField(
-      getFixture("music:NOW_PLAYING"),
-      player?.current?.metadata
-        ? getFixture("music:METADATA", player?.current?.metadata)
-        : "-"
+    const message = new NMesssageEmbed().setTitle(
+      getFixture("music/show:TRACK_LIST")
     );
 
-    const queues = await player?.queues;
-    let upnext = "-";
-    if (queues && queues.length > 0) {
-      upnext = queues
+    if (prevTracks && prevTracks.length > 0) {
+      const prev = prevTracks
         .map(
-          (queue, index) =>
-            `**${index + 1}.**\t${getFixture("music:METADATA", queue.metadata)}`
+          (track, index) =>
+            `**${index + 1}.**\t${getFixture("music:METADATA", track.metadata)}`
         )
         .reduce((prevVal, val) => `${prevVal}\n${val}`);
+      message.addField(getFixture("music:PREV"), prev);
     }
-    message.addField(getFixture("music:UP_NEXT"), upnext);
+
+    if (player?.track) {
+      message.addField(
+        getFixture("music:NOW_PLAYING"),
+        `**${player!.trackAt + 1}.**\t${getFixture(
+          "music:METADATA",
+          player?.track?.metadata
+        )}`
+      );
+    }
+
+    if (nextTracks && nextTracks.length > 0) {
+      const next = nextTracks
+        .map(
+          (track, index) =>
+            `**${player!.trackAt + index + 2}.**\t${getFixture(
+              "music:METADATA",
+              track.metadata
+            )}`
+        )
+        .reduce((prevVal, val) => `${prevVal}\n${val}`);
+      message.addField(getFixture("music:UP_NEXT"), next);
+    }
 
     message.setFooter(`Repeat mode: ${player?.mode}`);
 
