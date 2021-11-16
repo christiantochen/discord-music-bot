@@ -2,19 +2,16 @@ import fs from "fs";
 const flatten = require("flat");
 
 export const getFixture = (fixture: string, options?: any) => {
+  const endPath = process.env.NODE_ENV === "production" ? ".js" : ".ts";
   const fixtures = fixture.split(":");
   let filePath = `./${fixtures[0]}`;
 
   if (
-    !filePath.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts") &&
+    !filePath.endsWith(endPath) &&
     fs.existsSync(filePath) &&
-    !fs
-      .lstatSync(
-        `${filePath}/index${process.env.NODE_ENV === "production" ? ".js" : ".ts"}`
-      )
-      .isFile()
+    !fs.lstatSync(`${filePath}/index${endPath}`).isFile()
   )
-    filePath += process.env.NODE_ENV === "production" ? ".js" : ".ts";
+    filePath += endPath;
 
   let fixtureClass = ((f) => f.default || f)(require(filePath));
 

@@ -2,15 +2,18 @@ import { Client, Intents } from "discord.js";
 import SlashCommandHandler from "../handlers/slashCommandHandler";
 import EventHandler from "../handlers/eventHandler";
 import MusicPlayerHandler from "../handlers/musicPlayerHandler";
+import { Logger } from "tslog";
 
 export default class NClient extends Client {
+  public log: Logger = new Logger();
+
   public slashCommands = new SlashCommandHandler(this);
   public events = new EventHandler(this);
   public musicPlayers = new MusicPlayerHandler(this);
 
   public caches = {};
 
-  public constructor() {
+  constructor() {
     super({
       intents: [
         Intents.FLAGS.GUILDS,
@@ -20,6 +23,6 @@ export default class NClient extends Client {
       ],
     });
 
-    this.login(process.env.TOKEN!).catch(console.error);
+    this.login(process.env.TOKEN!);
   }
 }

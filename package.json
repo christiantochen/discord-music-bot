@@ -35,7 +35,8 @@
     "flat": "^5.0.2",
     "libsodium-wrappers": "^0.7.9",
     "moment": "^2.29.1",
-    "play-dl": "^1.3.0"
+    "play-dl": "^1.3.0",
+    "tslog": "^3.2.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15",
