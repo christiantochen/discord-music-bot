@@ -12,8 +12,7 @@ export default class EventHandler extends Collection<string, Event> {
 
     this.client = client;
 
-    // TODO: fix error logger
-    this.init().catch(console.error);
+    this.init();
   }
 
   private async init() {
@@ -22,7 +21,7 @@ export default class EventHandler extends Collection<string, Event> {
     const files = getAllFiles(path).filter((file) =>
       file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
     );
-    
+
     files.forEach((file) => {
       const eventClass = ((r) => r.default || r)(require(file));
       const eventFiles = file.split("/");

@@ -18,8 +18,7 @@ export default class SlashCommandHandler extends Collection<
 
     this.client = client;
 
-    // TODO: fix error logger
-    this.init().catch(console.error);
+    this.init()
   }
 
   private async init() {

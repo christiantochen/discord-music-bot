@@ -26,7 +26,7 @@ export default class MusicPlayer extends AudioPlayer {
 
   private connection: VoiceConnection | undefined;
   private subscription: PlayerSubscription | undefined;
-  private forcedStop: boolean = false;
+  private stopCalled: boolean = false;
   private timeout: NodeJS.Timeout | undefined;
 
   constructor(client: NClient, guildId: string) {
@@ -36,16 +36,17 @@ export default class MusicPlayer extends AudioPlayer {
 
     this.on(AudioPlayerStatus.Playing, this.onPlay);
     this.on(AudioPlayerStatus.Idle, this.onIdle);
-    this.on("error", console.error);
+    this.on("error", (e) => {
+      client.log.error(e);
+    });
   }
 
   connect(voiceChannel: VoiceChannel, memberChannel: TextChannel) {
     if (this.voiceChannelId && this.voiceChannelId === voiceChannel.id) {
-      console.log("music_player:connect", "existing");
+      this.client.log.info("exists");
       return this.subscription;
     }
 
-    console.log("music_player:connect", "new");
     this.channelId = memberChannel.id;
     this.voiceChannelId = voiceChannel.id;
 
@@ -55,20 +56,21 @@ export default class MusicPlayer extends AudioPlayer {
       adapterCreator: voiceChannel.guild.voiceAdapterCreator,
     });
 
-    this.subscription = this.connection.subscribe(this);
+    this.client.log.info("new");
+    return (this.subscription = this.connection.subscribe(this));
   }
 
   stop(force?: boolean | undefined): boolean {
+    this.stopCalled = true;
     this.track = undefined;
     this.trackAt = -1;
-    this.forcedStop = true;
-    console.log("music_player:stop", "clearing track.");
+    this.client.log.info();
 
     return super.stop(force);
   }
 
   disconnect(): void {
-    console.log("music_player:disconnect");
+    this.client.log.info();
 
     this.connection?.destroy();
     this.connection = undefined;
@@ -77,13 +79,13 @@ export default class MusicPlayer extends AudioPlayer {
     this.subscription = undefined;
 
     if (this.state?.status !== AudioPlayerStatus.Idle) {
-      console.log("music_player:disconnect:stop", this.state.status);
+      this.client.log.info("stop");
       this.stop(true);
     }
   }
 
   setRepeatMode(mode: string) {
-    console.log("music_player:setRepeatMode", mode);
+    this.client.log.info(mode);
     switch (mode) {
       case "off":
       case "current":
@@ -95,14 +97,11 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   async restart(): Promise<boolean> {
-    console.log("music_player:restart", this.trackAt < 0);
+    this.client.log.info("hasTrack and !firstTrack", this.trackAt < 0);
     if (this.trackAt < 0) return false;
 
     this.track = await createAudio(this.track?.metadata);
-    console.log(
-      "music_player:restart:play",
-      (this.track.metadata as any)?.title
-    );
+    this.client.log.info("play", (this.track.metadata as any)?.title);
     this.play(this.track);
     await this.send(getFixture("music:NOW_PLAYING"), this.track.metadata);
 
@@ -111,16 +110,16 @@ export default class MusicPlayer extends AudioPlayer {
 
   async add(audio: AudioResource): Promise<any | undefined> {
     this.tracks.push(audio);
-    console.log("music_player:add:track", (audio.metadata as any)?.title);
-    console.log("music_player:add:trackPlay", this.trackAt === -1);
+    this.client.log.info("hasTrack", this.trackAt != -1);
 
     if (this.trackAt === -1) {
       this.trackAt = 0;
       this.track = audio;
+      this.client.log.info("play", (audio.metadata as any)?.title);
       return this.play(audio);
     }
 
-    console.log("music_player:add:trackAt", `#${this.tracks.length}`);
+    this.client.log.info("tracks", `${this.tracks.length}`);
     return this.tracks.length;
   }
 
@@ -128,21 +127,20 @@ export default class MusicPlayer extends AudioPlayer {
     if (this.trackAt < 1) return;
 
     this.trackAt--;
-
-    console.log("music_player:prev", this.trackAt);
-
+    this.client.log.info("trackAt", this.trackAt);
     this.track = this.tracks[this.trackAt];
+
     if (!this.track.readable || this.track.started)
       this.track = await createAudio(this.track.metadata);
 
+    this.client.log.info("play", (this.track.metadata as any)?.title);
     this.play(this.track);
-    console.log("music_player:prev:play", (this.track.metadata as any)?.title);
 
     return this.track.metadata;
   }
 
   async next(forced: boolean = false): Promise<any | undefined> {
-    console.log("music_player:next:forced", forced);
+    this.client.log.info("forced", forced);
 
     if (this.tracks.length === this.trackAt + 1) {
       if (forced) return;
@@ -151,19 +149,15 @@ export default class MusicPlayer extends AudioPlayer {
       else if (this.mode === "off") this.trackAt = -1;
     } else this.trackAt++;
 
-    console.log("music_player:next", this.trackAt);
-
-    if (this.trackAt < 0) {
-      this.track = undefined;
-      return;
-    }
+    this.client.log.info("trackAt", this.trackAt);
+    if (this.trackAt < 0) return (this.track = undefined);
 
     this.track = this.tracks[this.trackAt];
     if (!this.track.readable || this.track.started)
       this.track = await createAudio(this.track.metadata);
 
     this.play(this.track);
-    console.log("music_player:next:play", (this.track.metadata as any)?.title);
+    this.client.log.info("play", (this.track.metadata as any)?.title);
 
     if (!forced) {
       await this.send(getFixture("music:NOW_PLAYING"), this.track.metadata);
@@ -174,7 +168,7 @@ export default class MusicPlayer extends AudioPlayer {
 
   private async onPlay() {
     if (this.timeout) {
-      console.log("music_player:on_play:clear_timeout");
+      this.client.log.info("clear_timeout");
       clearTimeout(this.timeout);
       this.timeout = undefined;
     }
@@ -185,18 +179,18 @@ export default class MusicPlayer extends AudioPlayer {
 
     if (this.track) {
       if (this.mode === "current") {
-        console.log("music_player:on_idle:restart", this.mode);
+        this.client.log.info("restart", this.mode);
         await this.restart();
       } else {
         const next = await this.next();
         shouldSetTimeout = !next;
-        console.log("music_player:on_idle:next", !!next);
+        this.client.log.info("next", !!next);
       }
     }
 
-    if ((shouldSetTimeout || this.forcedStop) && this.connection) {
-      console.log("music_player:on_idle:set_timeout", this.idleTimer);
-      this.forcedStop = false;
+    if ((shouldSetTimeout || this.stopCalled) && this.connection) {
+      this.client.log.info("set_timeout", this.idleTimer);
+      this.stopCalled = false;
       this.timeout = setTimeout(() => this.disconnect(), this.idleTimer);
     }
   }

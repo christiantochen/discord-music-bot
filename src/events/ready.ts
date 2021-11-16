@@ -3,16 +3,16 @@ import Event from "../libs/structures/Event";
 export default class Ready extends Event {
   once = true;
 
-  async execute() {
+  async execute(): Promise<void> {
     await this.client.slashCommands.deploy();
     await this.client.user?.setStatus("online");
     await this.client.user?.setActivity({
-      name: `Goshujin-sama`,
+      name: `Lozernhein`,
       type: "LISTENING",
     });
 
-    console.log(
-      `${this.client.user?.username} is ready to serve ${this.client.guilds.cache.size} guilds.`
+    this.client.log.info(
+      `${this.client.user?.username} is ready to serve ${this.client.guilds.cache.size} guilds on ${process.env.NODE_ENV}.`
     );
   }
 }
