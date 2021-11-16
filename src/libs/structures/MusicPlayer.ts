@@ -96,6 +96,18 @@ export default class MusicPlayer extends AudioPlayer {
     }
   }
 
+  async skipTo(skipNo: number): Promise<any> {
+    if (this.tracks.length < skipNo) return;
+
+    this.trackAt = skipNo - 1;
+    this.client.log.info("trackAt", this.trackAt);
+    this.track = this.tracks[this.trackAt];
+    this.client.log.info("play", (this.track.metadata as any)?.title);
+    this.play(this.track);
+
+    return this.track.metadata;
+  }
+
   async restart(): Promise<boolean> {
     this.client.log.info("hasTrack and !firstTrack", this.trackAt < 0);
     if (this.trackAt < 0) return false;
@@ -156,8 +168,8 @@ export default class MusicPlayer extends AudioPlayer {
     if (!this.track.readable || this.track.started)
       this.track = await createAudio(this.track.metadata);
 
-    this.play(this.track);
     this.client.log.info("play", (this.track.metadata as any)?.title);
+    this.play(this.track);
 
     if (!forced) {
       await this.send(getFixture("music:NOW_PLAYING"), this.track.metadata);
