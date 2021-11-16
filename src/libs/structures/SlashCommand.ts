@@ -1,5 +1,7 @@
 import {
   SlashCommandBuilder,
+  SlashCommandIntegerOption,
+  SlashCommandNumberOption,
   SlashCommandStringOption,
   SlashCommandUserOption,
 } from "@discordjs/builders";
@@ -38,6 +40,8 @@ export default class SlashCommand {
         command.addUserOption(option);
       if (option instanceof SlashCommandStringOption)
         command.addStringOption(option);
+      if (option instanceof SlashCommandNumberOption)
+        command.addNumberOption(option);
     });
 
     return command.toJSON();
