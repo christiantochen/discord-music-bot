@@ -2,7 +2,7 @@ import Collection from "@discordjs/collection";
 import NClient from "../libs/client";
 import Event from "../libs/structures/Event";
 import { join } from "path";
-import getAllFiles from "../libs/getAllFiles";
+import getAllFiles from "../libs/utils/getAllFiles";
 
 export default class EventHandler extends Collection<string, Event> {
   readonly client: NClient;

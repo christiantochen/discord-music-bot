@@ -18,8 +18,8 @@ export default class MusicPlayer extends AudioPlayer {
   readonly guildId: string;
   channelId: string | undefined;
   voiceChannelId: string | undefined;
-  tracks: AudioResource[] = [];
-  track: AudioResource | undefined;
+  tracks: AudioResource<any>[] = [];
+  track: AudioResource<any> | undefined;
   trackAt: number = -1;
   mode: "off" | "current" | "all" = "off";
   idleTimer: number = 60000;
@@ -102,7 +102,7 @@ export default class MusicPlayer extends AudioPlayer {
     this.trackAt = skipNo - 1;
     this.client.log.info("trackAt", this.trackAt);
     this.track = this.tracks[this.trackAt];
-    this.client.log.info("play", (this.track.metadata as any)?.title);
+    this.client.log.info("play", this.track.metadata?.title);
     this.play(this.track);
 
     return this.track.metadata;
@@ -110,24 +110,24 @@ export default class MusicPlayer extends AudioPlayer {
 
   async restart(): Promise<boolean> {
     this.client.log.info("hasTrack and !firstTrack", this.trackAt < 0);
-    if (this.trackAt < 0) return false;
+    if (this.trackAt < 0 || !this.track) return false;
 
-    this.track = await createAudio(this.track?.metadata);
-    this.client.log.info("play", (this.track.metadata as any)?.title);
+    this.track = await createAudio(this.track.metadata);
+    this.client.log.info("play", this.track.metadata?.title);
     this.play(this.track);
     await this.send(getFixture("music:NOW_PLAYING"), this.track.metadata);
 
     return true;
   }
 
-  async add(audio: AudioResource): Promise<any | undefined> {
+  async add(audio: AudioResource<any>): Promise<any | undefined> {
     this.tracks.push(audio);
     this.client.log.info("hasTrack", this.trackAt != -1);
 
     if (this.trackAt === -1) {
       this.trackAt = 0;
       this.track = audio;
-      this.client.log.info("play", (audio.metadata as any)?.title);
+      this.client.log.info("play", audio.metadata?.title);
       return this.play(audio);
     }
 
@@ -145,7 +145,7 @@ export default class MusicPlayer extends AudioPlayer {
     if (!this.track.readable || this.track.started)
       this.track = await createAudio(this.track.metadata);
 
-    this.client.log.info("play", (this.track.metadata as any)?.title);
+    this.client.log.info("play", this.track.metadata?.title);
     this.play(this.track);
 
     return this.track.metadata;
@@ -168,7 +168,7 @@ export default class MusicPlayer extends AudioPlayer {
     if (!this.track.readable || this.track.started)
       this.track = await createAudio(this.track.metadata);
 
-    this.client.log.info("play", (this.track.metadata as any)?.title);
+    this.client.log.info("play", this.track.metadata?.title);
     this.play(this.track);
 
     if (!forced) {

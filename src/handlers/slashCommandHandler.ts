@@ -4,7 +4,7 @@ import { join } from "path";
 import SlashCommand from "../libs/structures/SlashCommand";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import getAllFiles from "../libs/getAllFiles";
+import getAllFiles from "../libs/utils/getAllFiles";
 import { getFixture } from "../libs/fixtures";
 
 export default class SlashCommandHandler extends Collection<

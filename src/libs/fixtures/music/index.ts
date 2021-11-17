@@ -1,8 +1,6 @@
 export default {
   NOW_PLAYING: "NOW PLAYING",
-  UP_NEXT: "UP NEXT",
-  PREV: "PREVIOUS",
-  TRACK_AT: `Track add on Position #<<trackAt>>`,
+  TRACK_AT: `New track added at position #<<trackAt>>`,
   NO_SOURCE: `No source found for **<<query>>**.`,
   FIRST_SONG: `This is the first song in the player.`,
   LAST_SONG: `This is the last song in the player.`,

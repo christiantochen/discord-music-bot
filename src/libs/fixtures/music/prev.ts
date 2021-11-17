@@ -1,3 +1,3 @@
 export default {
-  DESCRIPTION: "Play previous song from the queue.",
+  DESCRIPTION: "Play previous queue from current track.",
 };

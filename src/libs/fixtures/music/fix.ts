@@ -1,3 +1,3 @@
 export default {
-  DESCRIPTION: "Reset music player.",
+  DESCRIPTION: "Bot will reset the music player and leave voice channel.",
 };
