@@ -13,17 +13,23 @@ export default class Show extends MusicPlayerSlashCommand {
 
     const message = new NMesssageEmbed();
 
-    const tracklist = player?.tracks
-      .map((track, index) => {
-        let message = getFixture("music:METADATA", track.metadata);
+    const tracklist =
+      player!.tracks.length > 0
+        ? player!.tracks
+            .map((track, index) => {
+              let message = getFixture("music:METADATA", track.metadata);
 
-        if (index === player.trackAt) message = `*${message}*`;
+              if (index === player!.trackAt) message = `*${message}*`;
 
-        return `**${index + 1}.**\t${message}`;
-      })
-      .reduce((prev, current) => `${prev}\n${current}`);
+              return `**${index + 1}.**\t${message}`;
+            })
+            .reduce((prev, current) => `${prev}\n${current}`)
+        : undefined;
 
-    message.addField(getFixture("music/show:TRACK_LIST"), tracklist!);
+    message.addField(
+      getFixture("music/show:TRACK_LIST"),
+      tracklist ?? getFixture("music/show:EMPTY")
+    );
     message.setFooter(`Repeat mode: ${player?.mode}`);
 
     return interaction.editReply({ embeds: [message] });

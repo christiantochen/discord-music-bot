@@ -8,5 +8,4 @@ export default {
   NO_PLAYER: `There's nothing playing in this server.`,
   REQUIRE_VOICE_CHANNEL: `You need to be in a voice channel to execute this command!`,
   REQUIRE_SAME_CHANNEL: `You need to be in the same voice channel with me to execute this command!`,
-  LEAVE_CHANNEL: `It was my honor to serve you **goshujin-sama.**`,
 };

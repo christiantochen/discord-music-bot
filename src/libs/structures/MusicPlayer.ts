@@ -36,16 +36,18 @@ export default class MusicPlayer extends AudioPlayer {
 
     this.on(AudioPlayerStatus.Playing, this.onPlay);
     this.on(AudioPlayerStatus.Idle, this.onIdle);
-    this.on("error", (e) => {
-      client.log.error(e);
-    });
   }
 
-  connect(voiceChannel: VoiceChannel, memberChannel: TextChannel) {
+  async connect(
+    voiceChannel: VoiceChannel,
+    memberChannel: TextChannel
+  ): Promise<boolean> {
     if (this.voiceChannelId && this.voiceChannelId === voiceChannel.id) {
       this.client.log.info("exists");
-      return this.subscription;
+      return false;
     }
+
+    await this.load();
 
     this.channelId = memberChannel.id;
     this.voiceChannelId = voiceChannel.id;
@@ -57,13 +59,14 @@ export default class MusicPlayer extends AudioPlayer {
     });
 
     this.client.log.info("new");
-    return (this.subscription = this.connection.subscribe(this));
+    this.setTimeout();
+    this.subscription = this.connection.subscribe(this);
+
+    return true;
   }
 
   stop(force?: boolean | undefined): boolean {
     this.stopCalled = true;
-    this.track = undefined;
-    this.trackAt = -1;
     this.client.log.info();
 
     return super.stop(force);
@@ -72,6 +75,9 @@ export default class MusicPlayer extends AudioPlayer {
   disconnect(): void {
     this.client.log.info();
 
+    this.track = undefined;
+    this.trackAt = -1;
+    this.tracks = [];
     this.connection?.destroy();
     this.connection = undefined;
     this.voiceChannelId = undefined;
@@ -79,7 +85,6 @@ export default class MusicPlayer extends AudioPlayer {
     this.subscription = undefined;
 
     if (this.state?.status !== AudioPlayerStatus.Idle) {
-      this.client.log.info("stop");
       this.stop(true);
     }
   }
@@ -100,20 +105,29 @@ export default class MusicPlayer extends AudioPlayer {
     if (this.tracks.length < skipNo) return;
 
     this.trackAt = skipNo - 1;
-    this.client.log.info("trackAt", this.trackAt);
-    this.track = this.tracks[this.trackAt];
-    this.client.log.info("play", this.track.metadata?.title);
+    this.track = await this.getTrack(this.trackAt);
     this.play(this.track);
 
     return this.track.metadata;
   }
 
-  async restart(): Promise<boolean> {
-    this.client.log.info("hasTrack and !firstTrack", this.trackAt < 0);
-    if (this.trackAt < 0 || !this.track) return false;
+  removeAt(trackAt: number): any {
+    if (trackAt < 1 && this.tracks.length < trackAt) return;
 
-    this.track = await createAudio(this.track.metadata);
-    this.client.log.info("play", this.track.metadata?.title);
+    const removed = this.tracks.splice(trackAt - 1, 1);
+    this.client.database.update(
+      "history",
+      { _id: this.guildId },
+      { data: this.tracks.map((t) => t.metadata) }
+    );
+    return removed[0].metadata;
+  }
+
+  async restart(): Promise<boolean> {
+    this.client.log.info(this.hasTrack());
+    if (!this.hasTrack()) return false;
+
+    this.track = await this.getTrack(this.trackAt);
     this.play(this.track);
     await this.send(getFixture("music:NOW_PLAYING"), this.track.metadata);
 
@@ -122,16 +136,20 @@ export default class MusicPlayer extends AudioPlayer {
 
   async add(audio: AudioResource<any>): Promise<any | undefined> {
     this.tracks.push(audio);
-    this.client.log.info("hasTrack", this.trackAt != -1);
+    this.client.log.info(audio.metadata.title);
+    this.client.database.update(
+      "history",
+      { _id: this.guildId },
+      { _id: this.guildId, data: this.tracks.map((t) => t.metadata) }
+    );
 
-    if (this.trackAt === -1) {
-      this.trackAt = 0;
+    if (!this.hasTrack() || this.state.status === AudioPlayerStatus.Idle) {
+      this.trackAt = this.tracks.length - 1;
       this.track = audio;
-      this.client.log.info("play", audio.metadata?.title);
       return this.play(audio);
     }
 
-    this.client.log.info("tracks", `${this.tracks.length}`);
+    this.client.log.info("tracks size", `${this.tracks.length}`);
     return this.tracks.length;
   }
 
@@ -139,13 +157,7 @@ export default class MusicPlayer extends AudioPlayer {
     if (this.trackAt < 1) return;
 
     this.trackAt--;
-    this.client.log.info("trackAt", this.trackAt);
-    this.track = this.tracks[this.trackAt];
-
-    if (!this.track.readable || this.track.started)
-      this.track = await createAudio(this.track.metadata);
-
-    this.client.log.info("play", this.track.metadata?.title);
+    this.track = await this.getTrack(this.trackAt);
     this.play(this.track);
 
     return this.track.metadata;
@@ -154,21 +166,15 @@ export default class MusicPlayer extends AudioPlayer {
   async next(forced: boolean = false): Promise<any | undefined> {
     this.client.log.info("forced", forced);
 
-    if (this.tracks.length === this.trackAt + 1) {
-      if (forced) return;
-
-      if (this.mode === "all") this.trackAt = 0;
-      else if (this.mode === "off") this.trackAt = -1;
+    if (this.isLastTrack()) {
+      if (this.mode === "off" || forced) return;
+      else if (this.mode === "all") this.trackAt = 0;
     } else this.trackAt++;
-
-    this.client.log.info("trackAt", this.trackAt);
-    if (this.trackAt < 0) return (this.track = undefined);
 
     this.track = this.tracks[this.trackAt];
     if (!this.track.readable || this.track.started)
       this.track = await createAudio(this.track.metadata);
 
-    this.client.log.info("play", this.track.metadata?.title);
     this.play(this.track);
 
     if (!forced) {
@@ -178,16 +184,41 @@ export default class MusicPlayer extends AudioPlayer {
     return this.track.metadata;
   }
 
+  async play(audio: AudioResource<any>) {
+    this.client.log.info(audio.metadata?.title);
+    return super.play(audio);
+  }
+
+  private async getTrack(trackAt: number): Promise<AudioResource<any>> {
+    this.client.log.info(trackAt);
+    let track = this.tracks[trackAt];
+
+    if (!track.readable || track.started)
+      track = await createAudio(track.metadata);
+
+    return track;
+  }
+
+  private hasTrack() {
+    return this.tracks && this.trackAt > -1;
+  }
+
+  private isLastTrack() {
+    return this.tracks.length === this.trackAt + 1;
+  }
+
   private async onPlay() {
     if (this.timeout) {
-      this.client.log.info("clear_timeout");
+      this.client.log.info("clearTimeout");
       clearTimeout(this.timeout);
       this.timeout = undefined;
     }
   }
 
   private async onIdle() {
-    let shouldSetTimeout;
+    if (this.stopCalled && this.connection) {
+      return this.setTimeout();
+    }
 
     if (this.track) {
       if (this.mode === "current") {
@@ -195,15 +226,35 @@ export default class MusicPlayer extends AudioPlayer {
         await this.restart();
       } else {
         const next = await this.next();
-        shouldSetTimeout = !next;
-        this.client.log.info("next", !!next);
+        if (!next) this.setTimeout();
       }
     }
+  }
 
-    if ((shouldSetTimeout || this.stopCalled) && this.connection) {
-      this.client.log.info("set_timeout", this.idleTimer);
-      this.stopCalled = false;
-      this.timeout = setTimeout(() => this.disconnect(), this.idleTimer);
+  private async setTimeout() {
+    this.client.log.info("setTimeout", this.idleTimer);
+    this.stopCalled = false;
+    this.timeout = setTimeout(() => this.disconnect, this.idleTimer);
+  }
+
+  private async load() {
+    const history = await this.client.database.get("history", {
+      _id: this.guildId,
+    });
+
+    if (history) {
+      const data = history.data as any[];
+      await Promise.all(
+        data.map(async (metadata) => {
+          const audio = await createAudio(metadata);
+          this.tracks.push(audio);
+        })
+      );
+
+      if (this.tracks.length > 0) {
+        this.trackAt = 0;
+        this.track = this.tracks[this.trackAt];
+      }
     }
   }
 

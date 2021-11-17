@@ -3,7 +3,7 @@ import { getFixture } from "../../libs/fixtures";
 import MusicPlayerSlashCommand from "../../libs/structures/MusicPlayerSlashCommand";
 import NMesssageEmbed from "../../libs/structures/NMessageEmbed";
 
-export default class Fix extends MusicPlayerSlashCommand {
+export default class Leave extends MusicPlayerSlashCommand {
   async execute(interaction: CommandInteraction) {
     const player = await this.client.musicPlayers.get(interaction.guildId);
     const member = interaction.member as GuildMember;
@@ -16,7 +16,7 @@ export default class Fix extends MusicPlayerSlashCommand {
 
     return interaction.editReply({
       embeds: [
-        new NMesssageEmbed({ description: getFixture("music:LEAVE_CHANNEL") }),
+        new NMesssageEmbed({ description: getFixture("music/leave:LEAVE_CHANNEL") }),
       ],
     });
   }
