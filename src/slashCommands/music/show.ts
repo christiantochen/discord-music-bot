@@ -10,57 +10,20 @@ export default class Show extends MusicPlayerSlashCommand {
     const { valid, errorMessage } = await this.validate(member, player);
 
     if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
-    let prevTracks: any[] | undefined;
-    let nextTracks: any[] | undefined;
 
-    if (player!.trackAt === -1) {
-      nextTracks = player?.tracks;
-    } else if (player!.trackAt === 0) {
-      nextTracks = player!.tracks.slice(1);
-    } else if (player!.trackAt === player!.tracks.length) {
-      prevTracks = player!.tracks.slice(0, player!.trackAt - 1);
-    } else {
-      prevTracks = player!.tracks.slice(0, player!.trackAt);
-      nextTracks = player!.tracks.slice(player!.trackAt + 1);
-    }
+    const message = new NMesssageEmbed();
 
-    const message = new NMesssageEmbed().setTitle(
-      getFixture("music/show:TRACK_LIST")
-    );
+    const tracklist = player?.tracks
+      .map((track, index) => {
+        let message = getFixture("music:METADATA", track.metadata);
 
-    if (prevTracks && prevTracks.length > 0) {
-      const prev = prevTracks
-        .map(
-          (track, index) =>
-            `**${index + 1}.**\t${getFixture("music:METADATA", track.metadata)}`
-        )
-        .reduce((prevVal, val) => `${prevVal}\n${val}`);
-      message.addField(getFixture("music:PREV"), prev);
-    }
+        if (index === player.trackAt) message = `*${message}*`;
 
-    if (player?.track) {
-      message.addField(
-        getFixture("music:NOW_PLAYING"),
-        `**${player!.trackAt + 1}.**\t${getFixture(
-          "music:METADATA",
-          player?.track?.metadata
-        )}`
-      );
-    }
+        return `**${index + 1}.**\t${message}`;
+      })
+      .reduce((prev, current) => `${prev}\n${current}`);
 
-    if (nextTracks && nextTracks.length > 0) {
-      const next = nextTracks
-        .map(
-          (track, index) =>
-            `**${player!.trackAt + index + 2}.**\t${getFixture(
-              "music:METADATA",
-              track.metadata
-            )}`
-        )
-        .reduce((prevVal, val) => `${prevVal}\n${val}`);
-      message.addField(getFixture("music:UP_NEXT"), next);
-    }
-
+    message.addField(getFixture("music/show:TRACK_LIST"), tracklist!);
     message.setFooter(`Repeat mode: ${player?.mode}`);
 
     return interaction.editReply({ embeds: [message] });

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const getAllFiles = function (dirPath: string, arrayOfFiles?: any[]): any[] {
+const getAllFiles = (dirPath: string, arrayOfFiles?: any[]): any[] => {
   const files = fs.readdirSync(dirPath);
 
   if (!arrayOfFiles) arrayOfFiles = [];

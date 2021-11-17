@@ -1,4 +1,4 @@
 export default {
-  DESCRIPTION: "Show current music player info.",
+  DESCRIPTION: "Display the queue of the current tracks.",
   TRACK_LIST: "TRACK LIST"
 };

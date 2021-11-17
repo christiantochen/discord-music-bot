@@ -8,7 +8,7 @@ import {
 import { getFixture } from "../../libs/fixtures";
 import MusicPlayerSlashCommand from "../../libs/structures/MusicPlayerSlashCommand";
 import NMesssageEmbed from "../../libs/structures/NMessageEmbed";
-import { createAudio, getYoutubeVideo } from "../../libs/utils";
+import { createAudio, getAudio } from "../../libs/utils";
 
 export default class Play extends MusicPlayerSlashCommand {
   options = [
@@ -31,14 +31,12 @@ export default class Play extends MusicPlayerSlashCommand {
     const voiceChannel = member.voice.channel as VoiceChannel;
     const message = new NMesssageEmbed();
     const query = interaction.options.getString(this.options[0].name, true);
-    const video = await getYoutubeVideo(query);
+    const resource = await getAudio(query);
 
-    if (!video) {
+    if (!resource) {
       message.setDescription(getFixture("music:NO_SOURCE", { query }));
       return interaction.editReply({ embeds: [message] });
     }
-
-    const resource = await createAudio(video);
 
     player.connect(voiceChannel, memberChannel);
 
@@ -46,7 +44,7 @@ export default class Play extends MusicPlayerSlashCommand {
     let title = !trackAt
       ? getFixture("music:NOW_PLAYING")
       : getFixture("music:TRACK_AT", { trackAt });
-    message.addField(title, getFixture("music:METADATA", video));
+    message.addField(title, getFixture("music:METADATA", resource.metadata));
 
     return interaction.editReply({ embeds: [message] });
   }

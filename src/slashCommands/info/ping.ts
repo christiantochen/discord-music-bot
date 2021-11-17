@@ -10,7 +10,6 @@ export default class Ping extends SlashCommand {
     const apiLatency = Math.floor(this.client.ws.ping);
 
     message
-      .setTitle(getFixture("info/ping:PING"))
       .addField(getFixture("info/ping:EXEC_TIME"), `${execTime}ms`)
       .addField(getFixture("info/ping:API_LATENCY"), `${apiLatency}ms`);
 
