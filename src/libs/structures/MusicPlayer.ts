@@ -75,9 +75,6 @@ export default class MusicPlayer extends AudioPlayer {
   disconnect(): void {
     this.client.log.info();
 
-    this.track = undefined;
-    this.trackAt = -1;
-    this.tracks = [];
     this.connection?.destroy();
     this.connection = undefined;
     this.voiceChannelId = undefined;
@@ -220,7 +217,7 @@ export default class MusicPlayer extends AudioPlayer {
       return this.setTimeout();
     }
 
-    if (this.track) {
+    if (this.track && this.connection) {
       if (this.mode === "current") {
         this.client.log.info("restart", this.mode);
         await this.restart();
