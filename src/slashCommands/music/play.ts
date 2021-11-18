@@ -38,7 +38,7 @@ export default class Play extends MusicPlayerSlashCommand {
       return interaction.editReply({ embeds: [message] });
     }
 
-    player.connect(voiceChannel, memberChannel);
+    await player.connect(voiceChannel, memberChannel);
 
     const trackAt = await player.add(resource);
     let title = !trackAt
