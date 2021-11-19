@@ -1,33 +1,37 @@
+<p align="center">
+    <h1 align="center">discord-music-bot</h1>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/npm/v/discord-music-bot.svg?orange=blue" />
+  <img src="https://img.shields.io/node/v/discord-music-bot.svg" />
+  <a href="https://github.com/christiantochen/discord-music-bot/blob/master/LICENSE">
+    <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg" target="_blank" />
+  </a>
+   <a href="https://twitter.com/christiantochen">
+    <img alt="Twitter: Christianto Chen" src="https://img.shields.io/twitter/follow/ChristiantoChen.svg?style=social" target="_blank" />
+  </a>
+</p>
+  
 ## Getting Started
-### Before you begin...
-1. This example is using typescript.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-Run `npm install -g ts-node typescript` if this is your first time using typescript.
-
-2. Node.js 16.6.0 or newer is required.
-
+### Prerequisites
+- [Node.js](https://nodejs.org/en/): Node.js 16.6.x or newer is required.
+- [MongoDB](https://www.mongodb.com/): MongoDB is required.
 ### Installation
+1. Make sure all prerequisites above are installed.
+2. Clone the repository, ie.`git clone https://github.com/christiantochen/discord-music-bot`
+3. Install the dependencies with `npm`
+4. While the above is running create your `.env` file using the example file provided in the repo.
+5. Run `npm start`
+6. You should see your bot up and running!
 
+## Show your support
+Please ⭐️ this repository if this project helped you!
 
+## License
+Copyright © 2021 [Christianto Chen](https://github.com/christiantochen).<br />
+This project is [MIT](https://github.com/christiantochen/discord-music-bot/blob/master/LICENSE) licensed.
 
-```
-git clone https://github.com/christiantochen/discord-bot-example
-cd discord-bot-example
-npm install
-cp .env.example .env
-```
-
-open your `.env` file and update `BOT_TOKEN=<YOUR BOT TOKEN>`
-
-
-If you don't have one yet, you can get it on [Discord Developer Portal](https://discord.com/developers/applications)
-
-```
-npm run dev
-```
-
-You should see your bot up and running. 
 
 
 
