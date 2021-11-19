@@ -8,7 +8,10 @@ export const getAudio = async (
   const validate = await play.validate(query);
 
   if (validate === "search") {
-    const videoResult = await play.search(query, { limit: 1 });
+    const videoResult = await play.search(query, {
+      source: { youtube: "video" },
+      limit: 1,
+    });
     if (!videoResult.length) return;
 
     const video = videoResult[0] as YouTubeVideo;
