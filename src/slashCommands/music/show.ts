@@ -12,26 +12,35 @@ export default class Show extends MusicPlayerSlashCommand {
     if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
 
     const message = new NMesssageEmbed();
+    let tracklist = player!.tracks;
 
-    const tracklist =
-      player!.tracks.length > 0
-        ? player!.tracks
-            .map((track, index) => {
-              let message = getFixture("music:METADATA", track.metadata);
-
-              if (index === player!.trackAt) message = `*${message}*`;
-
-              return `**${index + 1}.**\t${message}`;
-            })
-            .reduce((prev, current) => `${prev}\n${current}`)
-        : undefined;
+    if (tracklist.length > 5) {
+      tracklist = tracklist.slice(0, 5);
+    }
 
     message.addField(
       getFixture("music/show:TRACK_LIST"),
-      tracklist ?? getFixture("music/show:EMPTY")
+      this.mapTrackListToString(tracklist, player!.trackAt) ??
+        getFixture("music/show:EMPTY")
     );
-    message.setFooter(`Repeat mode: ${player?.mode}`);
+    message.setFooter(
+      `Repeat mode: ${player!.mode} | Total tracks: ${player!.tracks.length}`
+    );
 
     return interaction.editReply({ embeds: [message] });
+  }
+
+  mapTrackListToString(tracks: any[], trackAt: number): string | undefined {
+    if (!tracks || tracks.length === 0) return;
+
+    return tracks
+      .map((track, index) => {
+        let message = getFixture("music:METADATA", track.metadata);
+
+        if (index === trackAt) message = `*${message}*`;
+
+        return `**${index + 1}.**\t${message}`;
+      })
+      .reduce((prev, current) => `${prev}\n${current}`);
   }
 }

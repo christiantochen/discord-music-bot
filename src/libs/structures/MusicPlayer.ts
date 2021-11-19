@@ -47,11 +47,10 @@ export default class MusicPlayer extends AudioPlayer {
       return false;
     }
 
-    await this.load();
+    await this.loadTracksFromHistory();
 
     this.channelId = memberChannel.id;
     this.voiceChannelId = voiceChannel.id;
-
     this.connection = joinVoiceChannel({
       guildId: this.guildId,
       channelId: this.voiceChannelId,
@@ -59,22 +58,20 @@ export default class MusicPlayer extends AudioPlayer {
     });
 
     this.client.log.info("new");
-    this.setTimeout();
     this.subscription = this.connection.subscribe(this);
+    this.setTimeout();
 
     return true;
   }
 
   stop(force?: boolean | undefined): boolean {
-    this.stopCalled = true;
     this.client.log.info();
-
+    this.stopCalled = true;
     return super.stop(force);
   }
 
   disconnect(): void {
     this.client.log.info();
-
     this.connection?.destroy();
     this.connection = undefined;
     this.voiceChannelId = undefined;
@@ -86,38 +83,37 @@ export default class MusicPlayer extends AudioPlayer {
     }
   }
 
-  setRepeatMode(mode: string) {
+  setRepeatMode(mode: any) {
     this.client.log.info(mode);
-    switch (mode) {
-      case "off":
-      case "current":
-      case "all":
-        return (this.mode = mode);
-      default:
-        return (this.mode = "off");
-    }
+    return (this.mode = mode);
   }
 
-  async skipTo(skipNo: number): Promise<any> {
-    if (this.tracks.length < skipNo) return;
+  async skipTo(num: number): Promise<any> {
+    if (this.tracks.length < num) return;
 
-    this.trackAt = skipNo - 1;
+    this.trackAt = num - 1;
     this.track = await this.getTrack(this.trackAt);
     this.play(this.track);
 
     return this.track.metadata;
   }
 
-  removeAt(trackAt: number): any {
-    if (trackAt < 1 && this.tracks.length < trackAt) return;
+  async removeAt(
+    trackAt: number,
+    count?: number | null | undefined
+  ): Promise<any | undefined> {
+    if (trackAt < 1) return;
+    if (count && count < 1) return;
+    if (this.tracks.length < trackAt - 1 + (count ?? 1)) return;
 
-    const removed = this.tracks.splice(trackAt - 1, 1);
-    this.client.database.update(
+    const removed = this.tracks.splice(trackAt - 1, count ?? 1);
+    await this.client.database.update(
       "history",
       { _id: this.guildId },
       { data: this.tracks.map((t) => t.metadata) }
     );
-    return removed[0].metadata;
+
+    return removed.length;
   }
 
   async restart(): Promise<boolean> {
@@ -151,7 +147,7 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   async prev(): Promise<any | undefined> {
-    if (this.trackAt < 1) return;
+    if (this.isFirstTrack()) return;
 
     this.trackAt--;
     this.track = await this.getTrack(this.trackAt);
@@ -200,6 +196,10 @@ export default class MusicPlayer extends AudioPlayer {
     return this.tracks && this.trackAt > -1;
   }
 
+  private isFirstTrack() {
+    return this.trackAt === 0;
+  }
+
   private isLastTrack() {
     return this.tracks.length === this.trackAt + 1;
   }
@@ -234,7 +234,7 @@ export default class MusicPlayer extends AudioPlayer {
     this.timeout = setTimeout(() => this.disconnect, this.idleTimer);
   }
 
-  private async load() {
+  private async loadTracksFromHistory() {
     const history = await this.client.database.get("history", {
       _id: this.guildId,
     });

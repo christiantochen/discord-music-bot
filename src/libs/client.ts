@@ -26,7 +26,7 @@ export default class NClient extends Client {
         Intents.FLAGS.GUILD_VOICE_STATES,
       ],
     });
-    
+
     this.login(process.env.TOKEN!);
   }
 }
