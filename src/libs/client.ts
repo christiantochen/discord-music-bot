@@ -8,7 +8,8 @@ import SettingHandler from "../handlers/settingHandler";
 
 export default class NClient extends Client {
   public log: Logger = new Logger();
-  public database = new Database(this);
+  public database =
+    process.env.USE_MONGO === "TRUE" ? new Database(this) : undefined;
   public settings = new SettingHandler(this);
 
   public slashCommands = new SlashCommandHandler(this);
@@ -26,7 +27,7 @@ export default class NClient extends Client {
         Intents.FLAGS.GUILD_VOICE_STATES,
       ],
     });
-
+    
     this.login(process.env.TOKEN!);
   }
 }

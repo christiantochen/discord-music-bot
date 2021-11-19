@@ -16,7 +16,7 @@ export default class SettingHandler extends Collection<string, GuildSettings> {
   async getOrCreate(id: string) {
     if (this.has(id)) return this.get(id) as GuildSettings;
 
-    const row = (await this.client.database.get("guilds", {
+    const row = (await this.client.database?.get("guilds", {
       id: id,
     })) as GuildSettings;
 
@@ -29,14 +29,14 @@ export default class SettingHandler extends Collection<string, GuildSettings> {
   async create(id: string) {
     const payload = DefaultSettings(id);
 
-    await this.client.database.insert("guilds", payload);
+    await this.client.database?.insert("guilds", payload);
     this.set(id, payload);
 
     return payload;
   }
 
   async update(id: string, value: any) {
-    const row = await this.client.database.update("guilds", { id }, value);
+    const row = await this.client.database?.update("guilds", { id }, value);
 
     const payload = row?.value as GuildSettings;
     this.set(id, payload);

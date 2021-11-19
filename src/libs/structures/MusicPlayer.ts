@@ -107,7 +107,7 @@ export default class MusicPlayer extends AudioPlayer {
     if (this.tracks.length < trackAt - 1 + (count ?? 1)) return;
 
     const removed = this.tracks.splice(trackAt - 1, count ?? 1);
-    await this.client.database.update(
+    await this.client.database?.update(
       "history",
       { _id: this.guildId },
       { data: this.tracks.map((t) => t.metadata) }
@@ -130,7 +130,7 @@ export default class MusicPlayer extends AudioPlayer {
   async add(audio: AudioResource<any>): Promise<any | undefined> {
     this.tracks.push(audio);
     this.client.log.info(audio.metadata.title);
-    this.client.database.update(
+    this.client.database?.update(
       "history",
       { _id: this.guildId },
       { _id: this.guildId, data: this.tracks.map((t) => t.metadata) }
@@ -235,7 +235,7 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   private async loadTracksFromHistory() {
-    const history = await this.client.database.get("history", {
+    const history = await this.client.database?.get("history", {
       _id: this.guildId,
     });
 
