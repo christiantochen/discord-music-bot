@@ -1,10 +1,11 @@
 import { SlashCommandNumberOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import MusicPlayerSlashCommand from "../../libs/structures/MusicPlayerSlashCommand";
-import NMesssageEmbed from "../../libs/structures/NMessageEmbed";
+import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
+import validate from "../../libs/utils/validate";
+import Interaction from "../../libs/structures/Interaction";
 
-export default class Track extends MusicPlayerSlashCommand {
+export default class Track extends Interaction {
   options = [
     new SlashCommandNumberOption()
       .setName(getFixture("music/track:OPTION_NUMBER"))
@@ -13,15 +14,16 @@ export default class Track extends MusicPlayerSlashCommand {
   ];
 
   async execute(interaction: CommandInteraction) {
-    const player = await this.client.musicPlayers.get(interaction.guildId);
+    const manager = await this.client.musicPlayers.get(interaction.guildId);
 
     const member = interaction.member as GuildMember;
-    const { valid, errorMessage } = await this.validate(member, player);
+    const validation = await validate.musicPlayerInteraction(member, manager);
 
-    if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
+    if (!validation.valid)
+      return interaction.editReply({ embeds: [validation.errorMessage!] });
 
-    const trackNo = interaction.options.getNumber(this.options[0].name);
-    const metadata = await player!.skipTo(trackNo!);
+    const trackNo = interaction.options.getNumber(this.options[0].name, true);
+    const metadata = await manager!.skip(trackNo);
 
     const message = new NMesssageEmbed();
 
@@ -31,9 +33,7 @@ export default class Track extends MusicPlayerSlashCommand {
         getFixture("music:METADATA", metadata)
       );
     } else if (trackNo) {
-      message.setDescription(
-        getFixture("music/track:ERROR", { trackNo })
-      );
+      message.setDescription(getFixture("music/track:ERROR", { trackNo }));
     } else {
       message.setDescription(getFixture("music:LAST_SONG"));
     }

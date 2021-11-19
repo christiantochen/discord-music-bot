@@ -8,7 +8,7 @@ import {
 } from "mongodb";
 import NClient from "./client";
 
-export type DatabaseCollection = "guilds" | "history";
+export type DatabaseCollection = "guilds" | "music_players";
 
 export default class Database {
   readonly client: NClient;
@@ -49,14 +49,13 @@ export default class Database {
     filter: Filter<any>,
     data: any
   ): Promise<ModifyResult> | undefined {
-    return this.db?.collection(collection).findOneAndUpdate(
-      filter,
-      { $set: data },
-      {
-        upsert: true,
-        returnDocument: "after",
-      }
-    );
+    return this.db
+      ?.collection(collection)
+      .findOneAndUpdate(
+        filter,
+        { $set: data },
+        { upsert: true, returnDocument: "after" }
+      );
   }
 
   public delete(

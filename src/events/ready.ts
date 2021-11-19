@@ -4,10 +4,10 @@ export default class Ready extends Event {
   once = true;
 
   async execute(): Promise<void> {
-    await this.client.slashCommands.deploy();
+    await this.client.interactions.deploy();
     await this.client.user?.setStatus("online");
     await this.client.user?.setActivity({
-      name: `Lozernhein`,
+      name: `/help`,
       type: "LISTENING",
     });
 

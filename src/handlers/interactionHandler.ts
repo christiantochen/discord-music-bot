@@ -1,15 +1,15 @@
 import Collection from "@discordjs/collection";
 import NClient from "../libs/client";
 import { join } from "path";
-import SlashCommand from "../libs/structures/SlashCommand";
+import Interaction from "../libs/structures/Interaction";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import getAllFiles from "../libs/utils/getAllFiles";
 import { getFixture } from "../libs/fixtures";
 
-export default class SlashCommandHandler extends Collection<
+export default class InteractionHandler extends Collection<
   string,
-  SlashCommand
+  Interaction
 > {
   client: NClient;
 
@@ -18,11 +18,11 @@ export default class SlashCommandHandler extends Collection<
 
     this.client = client;
 
-    this.init()
+    this.init();
   }
 
   private async init() {
-    const folder = "slashCommands";
+    const folder = "interactions";
     const path = join(__dirname, "..", folder);
 
     const files = getAllFiles(path).filter((file) =>
@@ -35,7 +35,7 @@ export default class SlashCommandHandler extends Collection<
       const fileName = commandFiles[commandFiles.length - 1].split(".")[0];
       const subFolder = file.split(folder)[1];
 
-      const command: SlashCommand = new commandClass(
+      const command: Interaction = new commandClass(
         this.client,
         fileName,
         getFixture(`${subFolder}:DESCRIPTION`)

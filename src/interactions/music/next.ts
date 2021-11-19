@@ -1,18 +1,20 @@
 import { CommandInteraction, GuildMember } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import MusicPlayerSlashCommand from "../../libs/structures/MusicPlayerSlashCommand";
-import NMesssageEmbed from "../../libs/structures/NMessageEmbed";
+import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
+import Interaction from "../../libs/structures/Interaction";
+import validate from "../../libs/utils/validate";
 
-export default class Next extends MusicPlayerSlashCommand {
+export default class Next extends Interaction {
   async execute(interaction: CommandInteraction) {
-    const player = await this.client.musicPlayers.get(interaction.guildId);
+    const manager = await this.client.musicPlayers.get(interaction.guildId);
 
     const member = interaction.member as GuildMember;
-    const { valid, errorMessage } = await this.validate(member, player);
+    const validation = await validate.musicPlayerInteraction(member, manager);
 
-    if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
+    if (!validation.valid)
+      return interaction.editReply({ embeds: [validation.errorMessage!] });
 
-    const metadata = await player!.next(true);
+    const metadata = await manager!.next();
     const message = new NMesssageEmbed();
 
     if (metadata) {

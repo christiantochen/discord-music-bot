@@ -1,9 +1,5 @@
 export interface GuildSettings {
-  id: string;
+  _id: string;
   language: string;
+  prefix: string;
 }
-
-export default (id: string): GuildSettings => ({
-  id,
-  language: "en-US",
-});

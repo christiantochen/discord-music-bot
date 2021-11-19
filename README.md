@@ -3,7 +3,6 @@
 </p>
     
 <p align="center">
-  <img src="https://img.shields.io/static/v1?label=npm&message=>=7.0.0&color=blue&style=for-the-badge" />
   <img src="https://img.shields.io/static/v1?label=node&message=>=16.6.0&color=blue&style=for-the-badge" />
   <a href="https://github.com/christiantochen/discord-music-bot/blob/master/LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-red.svg?style=for-the-badge" target="_blank" />
@@ -32,8 +31,3 @@ Please ⭐️ this repository if this project helped you!
 ## License
 Copyright © 2021 [Christianto Chen](https://github.com/christiantochen).<br />
 This project is [MIT](https://github.com/christiantochen/discord-music-bot/blob/master/LICENSE) licensed.
-
-
-
-
-
