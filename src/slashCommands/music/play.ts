@@ -41,9 +41,9 @@ export default class Play extends MusicPlayerSlashCommand {
     await player.connect(voiceChannel, memberChannel);
 
     const trackAt = await player.add(resource);
-    let title = !trackAt
-      ? getFixture("music:NOW_PLAYING")
-      : getFixture("music:TRACK_AT", { trackAt });
+    let title = trackAt
+      ? getFixture("music:TRACK_AT", { trackAt })
+      : getFixture("music:NOW_PLAYING");
     message.addField(title, getFixture("music:METADATA", resource.metadata));
 
     return interaction.editReply({ embeds: [message] });

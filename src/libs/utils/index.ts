@@ -5,11 +5,20 @@ import { YouTubeVideo } from "play-dl/dist/YouTube/classes/Video";
 export const getAudio = async (
   query: string
 ): Promise<AudioResource<any> | undefined> => {
-  const videoResult = await play.search(query, { limit: 1 });
-  if (!videoResult.length) return;
+  const validate = await play.validate(query);
 
-  const video = videoResult[0] as YouTubeVideo;
-  return createAudio(video);
+  if (validate === "search") {
+    const videoResult = await play.search(query, { limit: 1 });
+    if (!videoResult.length) return;
+
+    const video = videoResult[0] as YouTubeVideo;
+    return createAudio(video);
+  }
+
+  if (validate === "yt_video") {
+    const { video_details } = await play.video_basic_info(query);
+    return createAudio(video_details);
+  }
 };
 
 export const createAudio = async (
