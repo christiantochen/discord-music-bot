@@ -1,15 +1,16 @@
 <p align="center">
     <h1 align="center">discord-music-bot</h1>
 </p>
-
+    
 <p align="center">
-  <img src="https://img.shields.io/npm/v/discord-music-bot.svg?orange=blue" />
-  <img src="https://img.shields.io/node/v/discord-music-bot.svg" />
+  <img src="https://img.shields.io/static/v1?label=npm&message=>=7.0.0&color=blue&style=for-the-badge" />
+  <img src="https://img.shields.io/static/v1?label=node&message=>=16.6.0&color=blue&style=for-the-badge" />
   <a href="https://github.com/christiantochen/discord-music-bot/blob/master/LICENSE">
-    <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg" target="_blank" />
+    <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-red.svg?style=for-the-badge" target="_blank" />
   </a>
-   <a href="https://twitter.com/christiantochen">
-    <img alt="Twitter: Christianto Chen" src="https://img.shields.io/twitter/follow/ChristiantoChen.svg?style=social" target="_blank" />
+  <a href="https://twitter.com/christiantochen">
+    <img 
+     alt="Twitter: Christianto Chen" src="https://img.shields.io/twitter/follow/ChristiantoChen.svg?style=for-the-badge&logo=twitter&color=blue" target="_blank" />
   </a>
 </p>
   
