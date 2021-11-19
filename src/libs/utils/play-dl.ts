@@ -1,10 +1,9 @@
 import { AudioResource, createAudioResource } from "@discordjs/voice";
 import * as play from "play-dl";
-import { YouTubeVideo } from "play-dl/dist/YouTube/classes/Video";
 
-export const getAudio = async (
+export const getAudioMetadata = async (
   query: string
-): Promise<AudioResource<any> | undefined> => {
+): Promise<play.YouTubeVideo | undefined> => {
   const validate = await play.validate(query);
 
   if (validate === "search") {
@@ -12,25 +11,22 @@ export const getAudio = async (
       source: { youtube: "video" },
       limit: 1,
     });
-    if (!videoResult.length) return;
 
-    const video = videoResult[0] as YouTubeVideo;
-    return createAudio(video);
+    if (videoResult.length === 0) return;
+
+    return videoResult[0] as play.YouTubeVideo;
   }
 
   if (validate === "yt_video") {
     const { video_details } = await play.video_basic_info(query);
-    return createAudio(video_details);
+    return video_details;
   }
 };
 
 export const createAudio = async (
-  video: YouTubeVideo | any
+  metadata: play.YouTubeVideo | any
 ): Promise<AudioResource<any>> => {
-  const { stream, type } = await play.stream(video.url, { quality: 0 });
+  const { stream, type } = await play.stream(metadata.url, { quality: 0 });
 
-  return createAudioResource(stream, {
-    inputType: type,
-    metadata: video,
-  });
+  return createAudioResource(stream, { inputType: type, metadata });
 };

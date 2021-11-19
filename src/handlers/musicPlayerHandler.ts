@@ -1,10 +1,10 @@
 import Collection from "@discordjs/collection";
 import NClient from "../libs/client";
-import MusicPlayer from "../libs/structures/MusicPlayer";
+import MusicPlayerManager from "../libs/managers/MusicPlayerManager";
 
 export default class MusicPlayerHandler extends Collection<
   string,
-  MusicPlayer
+  MusicPlayerManager
 > {
   readonly client: NClient;
 
@@ -14,12 +14,12 @@ export default class MusicPlayerHandler extends Collection<
     this.client = client;
   }
 
-  async getOrCreate(guildId: string): Promise<MusicPlayer> {
+  async getOrCreate(guildId: string): Promise<MusicPlayerManager> {
     return this.get(guildId) ?? this.create(guildId);
   }
 
-  async create(guildId: string): Promise<MusicPlayer> {
-    const player = new MusicPlayer(this.client, guildId);
+  async create(guildId: string): Promise<MusicPlayerManager> {
+    const player = new MusicPlayerManager(this.client, guildId);
     this.set(guildId, player);
     return player;
   }

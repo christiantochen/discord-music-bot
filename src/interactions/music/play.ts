@@ -6,11 +6,12 @@ import {
   VoiceChannel,
 } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import MusicPlayerSlashCommand from "../../libs/structures/MusicPlayerSlashCommand";
-import NMesssageEmbed from "../../libs/structures/NMessageEmbed";
-import { createAudio, getAudio } from "../../libs/utils";
+import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
+import { getAudioMetadata } from "../../libs/utils/play-dl";
+import Interaction from "../../libs/structures/Interaction";
+import validate from "../../libs/utils/validate";
 
-export default class Play extends MusicPlayerSlashCommand {
+export default class Play extends Interaction {
   options = [
     new SlashCommandStringOption()
       .setName(getFixture(`music/play:OPTION_TITLE`))
@@ -19,32 +20,33 @@ export default class Play extends MusicPlayerSlashCommand {
   ];
 
   async execute(interaction: CommandInteraction) {
-    const player = await this.client.musicPlayers.getOrCreate(
+    const manager = await this.client.musicPlayers.getOrCreate(
       interaction.guildId
     );
     const member = interaction.member as GuildMember;
-    const { valid, errorMessage } = await this.validate(member, player);
+    const validation = await validate.musicPlayerInteraction(member, manager);
 
-    if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
+    if (!validation.valid)
+      return interaction.editReply({ embeds: [validation.errorMessage!] });
 
-    const memberChannel = interaction.channel as TextChannel;
-    const voiceChannel = member.voice.channel as VoiceChannel;
     const message = new NMesssageEmbed();
     const query = interaction.options.getString(this.options[0].name, true);
-    const resource = await getAudio(query);
+    const metadata = await getAudioMetadata(query);
 
-    if (!resource) {
+    if (!metadata) {
       message.setDescription(getFixture("music:NO_SOURCE", { query }));
       return interaction.editReply({ embeds: [message] });
     }
 
-    await player.connect(voiceChannel, memberChannel);
+    const memberChannel = interaction.channel as TextChannel;
+    const voiceChannel = member.voice.channel as VoiceChannel;
+    await manager.connect(voiceChannel, memberChannel);
 
-    const trackAt = await player.add(resource);
+    const trackAt = await manager.add(metadata);
     let title = trackAt
       ? getFixture("music:TRACK_AT", { trackAt })
       : getFixture("music:NOW_PLAYING");
-    message.addField(title, getFixture("music:METADATA", resource.metadata));
+    message.addField(title, getFixture("music:METADATA", metadata));
 
     return interaction.editReply({ embeds: [message] });
   }

@@ -1,10 +1,11 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import MusicPlayerSlashCommand from "../../libs/structures/MusicPlayerSlashCommand";
-import NMesssageEmbed from "../../libs/structures/NMessageEmbed";
+import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
+import validate from "../../libs/utils/validate";
+import Interaction from "../../libs/structures/Interaction";
 
-export default class Repeat extends MusicPlayerSlashCommand {
+export default class Repeat extends Interaction {
   options = [
     new SlashCommandStringOption()
       .setName(getFixture("music/repeat:MODE"))
@@ -18,16 +19,15 @@ export default class Repeat extends MusicPlayerSlashCommand {
   ];
 
   async execute(interaction: CommandInteraction) {
-    const player = await this.client.musicPlayers.get(interaction.guildId);
-
+    const manager = await this.client.musicPlayers.get(interaction.guildId);
     const member = interaction.member as GuildMember;
-    const { valid, errorMessage } = await this.validate(member, player);
+    const validation = await validate.musicPlayerInteraction(member, manager);
 
-    if (!valid) return interaction.editReply({ embeds: [errorMessage!] });
+    if (!validation.valid)
+      return interaction.editReply({ embeds: [validation.errorMessage!] });
 
-    const mode = player!.setRepeatMode(
-      interaction.options.getString(this.options[0].name, true)
-    );
+    const mode = interaction.options.getString(this.options[0].name, true);
+    await manager!.setRepeatMode(mode);
 
     return interaction.editReply({
       embeds: [

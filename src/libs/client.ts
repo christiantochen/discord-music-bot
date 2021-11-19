@@ -1,18 +1,17 @@
 import { Client, Intents } from "discord.js";
-import SlashCommandHandler from "../handlers/slashCommandHandler";
 import EventHandler from "../handlers/eventHandler";
 import MusicPlayerHandler from "../handlers/musicPlayerHandler";
 import { Logger } from "tslog";
 import Database from "./database";
 import SettingHandler from "../handlers/settingHandler";
+import InteractionHandler from "../handlers/interactionHandler";
 
 export default class NClient extends Client {
   public log: Logger = new Logger();
-  public database =
-    process.env.USE_MONGO === "TRUE" ? new Database(this) : undefined;
+  public database = new Database(this);
   public settings = new SettingHandler(this);
 
-  public slashCommands = new SlashCommandHandler(this);
+  public interactions = new InteractionHandler(this);
   public events = new EventHandler(this);
   public musicPlayers = new MusicPlayerHandler(this);
 
@@ -27,7 +26,7 @@ export default class NClient extends Client {
         Intents.FLAGS.GUILD_VOICE_STATES,
       ],
     });
-    
+
     this.login(process.env.TOKEN!);
   }
 }

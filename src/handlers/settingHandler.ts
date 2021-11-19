@@ -1,42 +1,46 @@
 import Collection from "@discordjs/collection";
 import NClient from "../libs/client";
-import DefaultSettings, {
-  GuildSettings,
-} from "../libs/interfaces/GuildSettings";
+import Database from "../libs/database";
+import { GuildSettings } from "../libs/interfaces/GuildSettings";
+
+const collection = "guilds";
 
 export default class SettingHandler extends Collection<string, GuildSettings> {
   readonly client: NClient;
+  private readonly database: Database;
 
   constructor(client: NClient) {
     super();
 
     this.client = client;
+    this.database = client.database;
   }
 
-  async getOrCreate(id: string) {
+  async getOrCreate(id: string): Promise<GuildSettings> {
     if (this.has(id)) return this.get(id) as GuildSettings;
 
-    const row = (await this.client.database?.get("guilds", {
-      id: id,
-    })) as GuildSettings;
+    const row = await this.database?.get(collection, {
+      _id: id,
+    });
 
     if (!row) return this.create(id);
 
-    this.set(id, row);
-    return row;
+    this.set(id, row as GuildSettings);
+
+    return row as GuildSettings;
   }
 
-  async create(id: string) {
-    const payload = DefaultSettings(id);
+  async create(id: string): Promise<GuildSettings> {
+    const payload = { _id: id, language: "en-US", prefix: "!" };
 
-    await this.client.database?.insert("guilds", payload);
+    await this.database?.insert(collection, payload);
     this.set(id, payload);
 
-    return payload;
+    return payload as GuildSettings;
   }
 
   async update(id: string, value: any) {
-    const row = await this.client.database?.update("guilds", { id }, value);
+    const row = await this.database?.update(collection, { _id: id }, value);
 
     const payload = row?.value as GuildSettings;
     this.set(id, payload);

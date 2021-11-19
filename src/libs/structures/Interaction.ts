@@ -1,6 +1,5 @@
 import {
   SlashCommandBuilder,
-  SlashCommandIntegerOption,
   SlashCommandNumberOption,
   SlashCommandStringOption,
   SlashCommandUserOption,
@@ -8,10 +7,10 @@ import {
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types";
 import NClient from "../client";
 
-export default class SlashCommand {
+export default class Interaction {
   readonly client: NClient;
   readonly name: string;
-  readonly description: string;
+  readonly description: string = "No description provided.";
 
   options: any[] = [];
   default_permission: boolean | undefined;
@@ -19,7 +18,8 @@ export default class SlashCommand {
   constructor(client: NClient, name: string, description: string) {
     this.client = client;
     this.name = name;
-    this.description = description;
+
+    if (description.length > 0) this.description = description;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
