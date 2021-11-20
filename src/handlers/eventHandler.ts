@@ -1,13 +1,13 @@
 import Collection from "@discordjs/collection";
-import NClient from "../libs/client";
+import BotClient from "../libs/client";
 import Event from "../libs/structures/Event";
 import { join } from "path";
 import getAllFiles from "../libs/utils/getAllFiles";
 
 export default class EventHandler extends Collection<string, Event> {
-  readonly client: NClient;
+  readonly client: BotClient;
 
-  constructor(client: NClient) {
+  constructor(client: BotClient) {
     super();
 
     this.client = client;

@@ -1,5 +1,5 @@
 import Collection from "@discordjs/collection";
-import NClient from "../libs/client";
+import BotClient from "../libs/client";
 import { join } from "path";
 import Interaction from "../libs/structures/Interaction";
 import { REST } from "@discordjs/rest";
@@ -11,9 +11,9 @@ export default class InteractionHandler extends Collection<
   string,
   Interaction
 > {
-  client: NClient;
+  client: BotClient;
 
-  constructor(client: NClient) {
+  constructor(client: BotClient) {
     super();
 
     this.client = client;

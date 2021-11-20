@@ -5,15 +5,13 @@ import {
   VoiceConnection,
 } from "@discordjs/voice";
 import { TextChannel, VoiceChannel } from "discord.js";
-import NClient from "../client";
+import BotClient from "../client";
 import { getFixture } from "../fixtures";
-import NMesssageEmbed from "../extensions/NMessageEmbed";
 import MusicPlayer, { RepeatMode } from "../structures/MusicPlayer";
+import createEmbed from "../utils/createEmbed";
 
-const DB_COLLECTION = "music_players";
-
-export default class MusicPlayerManager {
-  readonly client: NClient;
+export default class MusicManager {
+  readonly client: BotClient;
   readonly guildId: string;
   channelId: string | undefined;
   voiceChannelId: string | undefined;
@@ -26,7 +24,7 @@ export default class MusicPlayerManager {
   private timeout: NodeJS.Timeout | undefined;
   private readonly pageLimit: number = 5;
 
-  constructor(client: NClient, guildId: string) {
+  constructor(client: BotClient, guildId: string) {
     this.client = client;
     this.guildId = guildId;
 
@@ -78,9 +76,9 @@ export default class MusicPlayerManager {
     return this.player.next();
   }
 
-  async skip(num: number): Promise<any | undefined> {
-    this.client.log.info(num);
-    return this.player.skip(num);
+  async skip(trackNo: number): Promise<any | undefined> {
+    this.client.log.info(trackNo);
+    return this.player.skip(trackNo);
   }
 
   stop(force?: boolean | undefined): boolean {
@@ -180,21 +178,17 @@ export default class MusicPlayerManager {
   private async save() {
     this.client.log.info();
     const { tracks, mode } = this.player;
-    await this.client.database?.update(
-      DB_COLLECTION,
-      { _id: this.guildId },
-      { tracks, mode }
-    );
+    await this.client.settings?.update(this.guildId, {
+      music: { tracks, mode },
+    });
   }
 
   private async load() {
     this.client.log.info();
-    const data = await this.client.database?.get(DB_COLLECTION, {
-      _id: this.guildId,
-    });
+    const data = await this.client.settings.get(this.guildId);
 
-    this.player.load(data?.tracks);
-    this.player.setMode(data?.mode);
+    this.player.load(data?.music?.tracks);
+    this.player.setMode(data?.music?.mode);
   }
 
   private async send(title: string, metadata: any): Promise<void> {
@@ -205,10 +199,7 @@ export default class MusicPlayerManager {
 
     await channel.send({
       embeds: [
-        new NMesssageEmbed().addField(
-          title,
-          getFixture("music:METADATA", metadata)
-        ),
+        createEmbed().addField(title, getFixture("music:METADATA", metadata)),
       ],
     });
   }

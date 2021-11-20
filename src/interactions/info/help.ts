@@ -1,10 +1,10 @@
 import { CommandInteraction } from "discord.js";
-import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
 import Interaction from "../../libs/structures/Interaction";
+import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Help extends Interaction {
   async execute(interaction: CommandInteraction) {
-    const message = new NMesssageEmbed().setTitle("HELP").setDescription(
+    const message = createEmbed({ title: "HELP" }).setDescription(
       `
       **Play a music**
       \`/play <<query>> \`
@@ -20,7 +20,7 @@ export default class Help extends Interaction {
 
       **Repeat mode** 
       \`/repeat <<mode>>\`
-      3 modes are available. \`all\` \`current\` and \`off\`      
+      3 modes are available. \`[all|current|off]\`      
       Example: \`/repeat mode:current\`
 
       **Jump to specific track in queue** 

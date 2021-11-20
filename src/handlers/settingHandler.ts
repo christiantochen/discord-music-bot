@@ -1,15 +1,15 @@
 import Collection from "@discordjs/collection";
-import NClient from "../libs/client";
+import BotClient from "../libs/client";
 import Database from "../libs/database";
-import { GuildSettings } from "../libs/interfaces/GuildSettings";
+import { GuildSettings } from "../libs/entities/GuildSettings";
 
 const collection = "guilds";
 
 export default class SettingHandler extends Collection<string, GuildSettings> {
-  readonly client: NClient;
+  readonly client: BotClient;
   private readonly database: Database;
 
-  constructor(client: NClient) {
+  constructor(client: BotClient) {
     super();
 
     this.client = client;
@@ -40,9 +40,16 @@ export default class SettingHandler extends Collection<string, GuildSettings> {
   }
 
   async update(id: string, value: any) {
-    const row = await this.database?.update(collection, { _id: id }, value);
+    let payload = value;
 
-    const payload = row?.value as GuildSettings;
+    if (!this.has(id)) {
+      payload = { _id: id, language: "en-US", prefix: "!", ...value };
+      await this.database?.insert(collection, payload);
+    } else {
+      const row = await this.database?.update(collection, { _id: id }, value);
+      payload = row?.value;
+    }
+
     this.set(id, payload);
 
     return payload;

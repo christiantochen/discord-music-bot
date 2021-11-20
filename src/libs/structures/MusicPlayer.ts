@@ -17,8 +17,7 @@ export default class MusicPlayer extends AudioPlayer {
   }
 
   async load(tracks: any[] | undefined) {
-    if (!tracks) return;
-    this.tracks = tracks;
+    if (tracks) this.tracks = tracks;
   }
 
   setMode(mode: RepeatMode | undefined) {
@@ -48,23 +47,25 @@ export default class MusicPlayer extends AudioPlayer {
     return this.play(this.tracks[this.trackAt - 1]);
   }
 
-  async skip(trackAt: number): Promise<any | undefined> {
-    if (trackAt <= 0) return;
-    if (this.tracks.length < trackAt) return;
-    this.trackAt = trackAt;
-    return this.play(this.tracks[this.trackAt - 1]);
+  async skip(trackNo: number): Promise<any | undefined> {
+    if (trackNo <= 0) return;
+    if (this.tracks.length < trackNo) return;
+
+    return this.play(this.tracks[(this.trackAt = trackNo) - 1]);
   }
 
   async next(): Promise<any | undefined> {
     if (this.tracks.length !== this.trackAt) this.trackAt++;
     else if (this.mode === "all") this.trackAt = 1;
     else if (this.mode === "off") return;
+
     return this.play(this.tracks[this.trackAt - 1]);
   }
 
   async prev(): Promise<any | undefined> {
     if (this.tracks.length <= 1) return;
     this.trackAt--;
+
     return this.play(this.tracks[this.trackAt - 1]);
   }
 
@@ -82,9 +83,5 @@ export default class MusicPlayer extends AudioPlayer {
     this.trackAt = this.tracks.findIndex((v) => v.id === track.id) + 1;
 
     return removedTrack;
-  }
-
-  stop(force?: boolean | undefined): boolean {
-    return super.stop(force);
   }
 }

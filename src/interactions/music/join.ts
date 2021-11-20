@@ -7,24 +7,18 @@ import {
   VoiceChannel,
 } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
 import Interaction from "../../libs/structures/Interaction";
-import validate from "../../libs/utils/validate";
+import { isMemberInVoiceChannel } from "../../libs/decorators/music";
+import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Join extends Interaction {
+  @isMemberInVoiceChannel()
   async execute(interaction: CommandInteraction) {
-    const manager = await this.client.musicPlayers.getOrCreate(
-      interaction.guildId
-    );
+    const manager = await this.client.musics.getOrCreate(interaction.guildId);
     const member = interaction.member as GuildMember;
-    const validation = await validate.musicPlayerInteraction(member, manager);
-
-    if (!validation.valid)
-      return interaction.editReply({ embeds: [validation.errorMessage!] });
-
     const memberChannel = interaction.channel as TextChannel;
     const voiceChannel = member.voice.channel as VoiceChannel;
-    const message = new NMesssageEmbed();
+    const message = createEmbed();
 
     if (!manager.voiceChannelId) {
       await manager.connect(voiceChannel, memberChannel);

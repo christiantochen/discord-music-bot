@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import NClient from "./libs/client";
+import BotClient from "./libs/client";
 
 dotenv.config();
 
-new NClient();
+new BotClient();
