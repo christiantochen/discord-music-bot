@@ -6,10 +6,13 @@ import {
   VoiceChannel,
 } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
 import { getAudioMetadata } from "../../libs/utils/play-dl";
 import Interaction from "../../libs/structures/Interaction";
-import validate from "../../libs/utils/validate";
+import {
+  isMemberInVoiceChannel,
+  IsMemberOnSameVoiceChannel,
+} from "../../libs/decorators/music";
+import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Play extends Interaction {
   options = [
@@ -19,17 +22,11 @@ export default class Play extends Interaction {
       .setRequired(true),
   ];
 
+  @isMemberInVoiceChannel()
   async execute(interaction: CommandInteraction) {
-    const manager = await this.client.musicPlayers.getOrCreate(
-      interaction.guildId
-    );
+    const manager = await this.client.musics.getOrCreate(interaction.guildId);
     const member = interaction.member as GuildMember;
-    const validation = await validate.musicPlayerInteraction(member, manager);
-
-    if (!validation.valid)
-      return interaction.editReply({ embeds: [validation.errorMessage!] });
-
-    const message = new NMesssageEmbed();
+    const message = createEmbed();
     const query = interaction.options.getString(this.options[0].name, true);
     const metadata = await getAudioMetadata(query);
 

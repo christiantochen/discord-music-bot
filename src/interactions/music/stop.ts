@@ -1,24 +1,21 @@
-import { CommandInteraction, GuildMember } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
-import validate from "../../libs/utils/validate";
 import Interaction from "../../libs/structures/Interaction";
+import {
+  isMemberInVoiceChannel,
+  IsMemberOnSameVoiceChannel,
+} from "../../libs/decorators/music";
+import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Stop extends Interaction {
+  @isMemberInVoiceChannel()
+  @IsMemberOnSameVoiceChannel()
   async execute(interaction: CommandInteraction) {
-    const manager = await this.client.musicPlayers.get(interaction.guildId);
-    const member = interaction.member as GuildMember;
-    const validation = await validate.musicPlayerInteraction(member, manager);
-
-    if (!validation.valid)
-      return interaction.editReply({ embeds: [validation.errorMessage!] });
-
+    const manager = await this.client.musics.get(interaction.guildId);
     manager!.stop(true);
 
     return interaction.editReply({
-      embeds: [
-        new NMesssageEmbed({ description: getFixture("music/stop:STOP") }),
-      ],
+      embeds: [createEmbed({ description: getFixture("music/stop:STOP") })],
     });
   }
 }

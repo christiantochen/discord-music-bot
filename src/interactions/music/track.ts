@@ -1,9 +1,12 @@
 import { SlashCommandNumberOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
-import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
-import validate from "../../libs/utils/validate";
 import Interaction from "../../libs/structures/Interaction";
+import {
+  isMemberInVoiceChannel,
+  IsMemberOnSameVoiceChannel,
+} from "../../libs/decorators/music";
+import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Track extends Interaction {
   options = [
@@ -13,19 +16,15 @@ export default class Track extends Interaction {
       .setRequired(true),
   ];
 
+  @isMemberInVoiceChannel()
+  @IsMemberOnSameVoiceChannel()
   async execute(interaction: CommandInteraction) {
-    const manager = await this.client.musicPlayers.get(interaction.guildId);
-
-    const member = interaction.member as GuildMember;
-    const validation = await validate.musicPlayerInteraction(member, manager);
-
-    if (!validation.valid)
-      return interaction.editReply({ embeds: [validation.errorMessage!] });
+    const manager = await this.client.musics.get(interaction.guildId);
 
     const trackNo = interaction.options.getNumber(this.options[0].name, true);
     const metadata = await manager!.skip(trackNo);
 
-    const message = new NMesssageEmbed();
+    const message = createEmbed();
 
     if (metadata) {
       message.addField(

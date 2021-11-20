@@ -1,22 +1,17 @@
 import { CommandInteraction, TextChannel } from "discord.js";
-import NMesssageEmbed from "../../libs/extensions/NMessageEmbed";
 import Interaction from "../../libs/structures/Interaction";
+import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Purge extends Interaction {
   async execute(interaction: CommandInteraction) {
-    const { user, guild, channel } = interaction;
-    const message = new NMesssageEmbed();
+    const message = createEmbed();
 
-    if (user.id !== guild?.ownerId)
+    if (interaction.user.id !== interaction.guild?.ownerId)
       return interaction.editReply({
         embeds: [message.setDescription("Only Owner can purge messages.")],
       });
 
-    if (!(channel instanceof TextChannel))
-      return interaction.editReply({
-        embeds: [message.setDescription("Can only purge Text Channel.")],
-      });
-
+    const channel = interaction.channel as TextChannel;
     const purged = await channel.bulkDelete(100, true);
 
     if (purged && purged.size)

@@ -6,16 +6,16 @@ import {
   ModifyResult,
   DeleteResult,
 } from "mongodb";
-import NClient from "./client";
+import BotClient from "./client";
 
-export type DatabaseCollection = "guilds" | "music_players";
+export type DatabaseCollection = "guilds";
 
 export default class Database {
-  readonly client: NClient;
+  readonly client: BotClient;
   private mongo: MongoClient;
   private db: Db | undefined;
 
-  constructor(client: NClient) {
+  constructor(client: BotClient) {
     this.client = client;
     this.mongo = new MongoClient(process.env.MONGO_URI!);
     this.init();
@@ -26,29 +26,29 @@ export default class Database {
     this.db = this.mongo.db(process.env.MONGO_DB!);
   }
 
-  public get(
+  async get(
     collection: DatabaseCollection,
     filter: Filter<any>
-  ): Promise<any> | undefined {
+  ): Promise<any | undefined> {
     return this.db?.collection(collection).findOne(filter);
   }
 
-  public getAll(collection: DatabaseCollection): Promise<any[]> | undefined {
+  async getAll(collection: DatabaseCollection): Promise<any[] | undefined> {
     return this.db?.collection(collection).find<any>({}).toArray();
   }
 
-  public insert(
+  async insert(
     collection: DatabaseCollection,
     data: any
-  ): Promise<InsertOneResult<any> | string> | undefined {
+  ): Promise<InsertOneResult<any> | string | undefined> {
     return this.db?.collection(collection).insertOne(data);
   }
 
-  public update(
+  async update(
     collection: DatabaseCollection,
     filter: Filter<any>,
     data: any
-  ): Promise<ModifyResult> | undefined {
+  ): Promise<ModifyResult | undefined> {
     return this.db
       ?.collection(collection)
       .findOneAndUpdate(
@@ -58,10 +58,10 @@ export default class Database {
       );
   }
 
-  public delete(
+  async delete(
     collection: DatabaseCollection,
     filter: Filter<any>
-  ): Promise<DeleteResult> | undefined {
+  ): Promise<DeleteResult | undefined> {
     return this.db?.collection(collection).deleteOne(filter);
   }
 }

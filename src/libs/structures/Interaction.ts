@@ -5,17 +5,17 @@ import {
   SlashCommandUserOption,
 } from "@discordjs/builders";
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types";
-import NClient from "../client";
+import BotClient from "../client";
 
 export default class Interaction {
-  readonly client: NClient;
+  readonly client: BotClient;
   readonly name: string;
   readonly description: string = "No description provided.";
 
   options: any[] = [];
   default_permission: boolean | undefined;
 
-  constructor(client: NClient, name: string, description: string) {
+  constructor(client: BotClient, name: string, description: string) {
     this.client = client;
     this.name = name;
 
