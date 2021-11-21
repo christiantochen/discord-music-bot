@@ -6,52 +6,52 @@ import { GuildSettings } from "../libs/entities/GuildSettings";
 const collection = "guilds";
 
 export default class SettingHandler extends Collection<string, GuildSettings> {
-  readonly client: BotClient;
-  private readonly database: Database;
+	readonly client: BotClient;
+	private readonly database: Database;
 
-  constructor(client: BotClient) {
-    super();
+	constructor(client: BotClient) {
+		super();
 
-    this.client = client;
-    this.database = client.database;
-  }
+		this.client = client;
+		this.database = client.database;
+	}
 
-  async getOrCreate(id: string): Promise<GuildSettings> {
-    if (this.has(id)) return this.get(id) as GuildSettings;
+	async getOrCreate(id: string): Promise<GuildSettings> {
+		if (this.has(id)) return this.get(id) as GuildSettings;
 
-    const row = await this.database?.get(collection, {
-      _id: id,
-    });
+		const row = await this.database?.get(collection, {
+			_id: id
+		});
 
-    if (!row) return this.create(id);
+		if (!row) return this.create(id);
 
-    this.set(id, row as GuildSettings);
+		this.set(id, row as GuildSettings);
 
-    return row as GuildSettings;
-  }
+		return row as GuildSettings;
+	}
 
-  async create(id: string): Promise<GuildSettings> {
-    const payload = { _id: id, language: "en-US", prefix: "!" };
+	async create(id: string): Promise<GuildSettings> {
+		const payload = { _id: id, language: "en-US", prefix: "!" };
 
-    await this.database?.insert(collection, payload);
-    this.set(id, payload);
+		await this.database?.insert(collection, payload);
+		this.set(id, payload);
 
-    return payload as GuildSettings;
-  }
+		return payload as GuildSettings;
+	}
 
-  async update(id: string, value: any) {
-    let payload = value;
+	async update(id: string, value: any) {
+		let payload = value;
 
-    if (!this.has(id)) {
-      payload = { _id: id, language: "en-US", prefix: "!", ...value };
-      await this.database?.insert(collection, payload);
-    } else {
-      const row = await this.database?.update(collection, { _id: id }, value);
-      payload = row?.value;
-    }
+		if (!this.has(id)) {
+			payload = { _id: id, language: "en-US", prefix: "!", ...value };
+			await this.database?.insert(collection, payload);
+		} else {
+			const row = await this.database?.update(collection, { _id: id }, value);
+			payload = row?.value;
+		}
 
-    this.set(id, payload);
+		this.set(id, payload);
 
-    return payload;
-  }
+		return payload;
+	}
 }

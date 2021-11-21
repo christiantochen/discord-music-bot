@@ -8,55 +8,55 @@ import getAllFiles from "../libs/utils/getAllFiles";
 import { getFixture } from "../libs/fixtures";
 
 export default class InteractionHandler extends Collection<
-  string,
-  Interaction
+	string,
+	Interaction
 > {
-  client: BotClient;
+	client: BotClient;
 
-  constructor(client: BotClient) {
-    super();
+	constructor(client: BotClient) {
+		super();
 
-    this.client = client;
+		this.client = client;
 
-    this.init();
-  }
+		this.init();
+	}
 
-  private async init() {
-    const folder = "interactions";
-    const path = join(__dirname, "..", folder);
+	private async init() {
+		const folder = "interactions";
+		const path = join(__dirname, "..", folder);
 
-    const files = getAllFiles(path).filter((file) =>
-      file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
-    );
+		const files = getAllFiles(path).filter((file) =>
+			file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
+		);
 
-    files.forEach((file) => {
-      const commandClass = ((r) => r.default || r)(require(file));
-      const commandFiles = file.split("/");
-      const fileName = commandFiles[commandFiles.length - 1].split(".")[0];
-      const subFolder = file.split(folder)[1];
+		files.forEach((file) => {
+			const commandClass = ((r) => r.default || r)(require(file));
+			const commandFiles = file.split("/");
+			const fileName = commandFiles[commandFiles.length - 1].split(".")[0];
+			const subFolder = file.split(folder)[1];
 
-      const command: Interaction = new commandClass(
-        this.client,
-        fileName,
-        getFixture(`${subFolder}:DESCRIPTION`)
-      );
+			const command: Interaction = new commandClass(
+				this.client,
+				fileName,
+				getFixture(`${subFolder}:DESCRIPTION`)
+			);
 
-      this.set(command.name, command);
-    });
-  }
+			this.set(command.name, command);
+		});
+	}
 
-  async deploy() {
-    const commands = this.map((c) => c.toJSON());
-    const rest = new REST({ version: "9" }).setToken(process.env.TOKEN!);
+	async deploy() {
+		const commands = this.map((c) => c.toJSON());
+		const rest = new REST({ version: "9" }).setToken(process.env.TOKEN!);
 
-    const { CLIENT_ID, GUILD_ID } = process.env;
+		const { CLIENT_ID } = process.env;
 
-    const guilds = await this.client.guilds.cache;
+		const guilds = await this.client.guilds.cache;
 
-    guilds.forEach((guild) => {
-      rest.put(Routes.applicationGuildCommands(CLIENT_ID!, guild.id), {
-        body: commands,
-      });
-    });
-  }
+		guilds.forEach((guild) => {
+			rest.put(Routes.applicationGuildCommands(CLIENT_ID!, guild.id), {
+				body: commands
+			});
+		});
+	}
 }

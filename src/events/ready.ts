@@ -1,18 +1,18 @@
 import Event from "../libs/structures/Event";
 
 export default class Ready extends Event {
-  once = true;
+	once = true;
 
-  async execute(): Promise<void> {
-    await this.client.interactions.deploy();
-    await this.client.user?.setStatus("online");
-    await this.client.user?.setActivity({
-      name: `/help`,
-      type: "LISTENING",
-    });
+	async execute(): Promise<void> {
+		await this.client.interactions.deploy();
+		await this.client.user?.setStatus("online");
+		await this.client.user?.setActivity({
+			name: "/help",
+			type: "LISTENING"
+		});
 
-    this.client.log.info(
-      `${this.client.user?.username} is ready to serve ${this.client.guilds.cache.size} guilds on ${process.env.NODE_ENV}.`
-    );
-  }
+		this.client.log.info(
+			`${this.client.user?.username} is ready to serve ${this.client.guilds.cache.size} guilds on ${process.env.NODE_ENV}.`
+		);
+	}
 }

@@ -3,38 +3,38 @@ import decorator from ".";
 import createEmbed from "../utils/createEmbed";
 
 export function isMemberInVoiceChannel(): any {
-  return decorator(async (interaction: CommandInteraction) => {
-    const member = interaction.member as GuildMember;
+	return decorator(async (interaction: CommandInteraction) => {
+		const member = interaction.member as GuildMember;
 
-    if (member.voice.channelId) return true;
+		if (member.voice.channelId) return true;
 
-    await interaction.editReply({
-      embeds: [
-        createEmbed({
-          description: "Please join a voice channel!",
-        }),
-      ],
-    });
+		await interaction.editReply({
+			embeds: [
+				createEmbed({
+					description: "Please join a voice channel!"
+				})
+			]
+		});
 
-    return false;
-  });
+		return false;
+	});
 }
 
 export function IsMemberOnSameVoiceChannel(): any {
-  return decorator(async (interaction: CommandInteraction) => {
-    const member = interaction.member as GuildMember;
-    if (member.voice.channelId === member.guild.me?.voice.channelId)
-      return true;
+	return decorator(async (interaction: CommandInteraction) => {
+		const member = interaction.member as GuildMember;
+		if (member.voice.channelId === member.guild.me?.voice.channelId)
+			return true;
 
-    await interaction.editReply({
-      embeds: [
-        createEmbed({
-          description:
-            "You need to be in the same voice channel with me to execute this command!",
-        }),
-      ],
-    });
+		await interaction.editReply({
+			embeds: [
+				createEmbed({
+					description:
+						"You need to be in the same voice channel with me to execute this command!"
+				})
+			]
+		});
 
-    return false;
-  });
+		return false;
+	});
 }

@@ -2,28 +2,28 @@ import fs from "fs";
 const flatten = require("flat");
 
 export const getFixture = (fixture: string, options?: any): string => {
-  const endPath = process.env.NODE_ENV === "production" ? ".js" : ".ts";
-  const fixtures = fixture.split(":");
-  let filePath = `./${fixtures[0]}`;
+	const endPath = process.env.NODE_ENV === "production" ? ".js" : ".ts";
+	const fixtures = fixture.split(":");
+	let filePath = `./${fixtures[0]}`;
 
-  if (
-    !filePath.endsWith(endPath) &&
-    fs.existsSync(filePath) &&
-    !fs.lstatSync(`${filePath}/index${endPath}`).isFile()
-  )
-    filePath += endPath;
+	if (
+		!filePath.endsWith(endPath) &&
+		fs.existsSync(filePath) &&
+		!fs.lstatSync(`${filePath}/index${endPath}`).isFile()
+	)
+		filePath += endPath;
 
-  let fixtureClass = ((f) => f.default || f)(require(filePath));
+	const fixtureClass = ((f) => f.default || f)(require(filePath));
 
-  if (!fixtureClass) return "";
+	if (!fixtureClass) return "";
 
-  let message = fixtureClass[fixtures[1]];
-  if (!options) return message;
+	let message = fixtureClass[fixtures[1]];
+	if (!options) return message;
 
-  const flattenOptions = flatten(options);
-  Object.keys(flattenOptions).forEach((option) => {
-    message = message.replace(`<<${option}>>`, flattenOptions[option]);
-  });
+	const flattenOptions = flatten(options);
+	Object.keys(flattenOptions).forEach((option) => {
+		message = message.replace(`<<${option}>>`, flattenOptions[option]);
+	});
 
-  return message;
+	return message;
 };
