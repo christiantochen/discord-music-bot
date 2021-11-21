@@ -10,11 +10,11 @@ export default class MusicHandler extends Collection<string, MusicManager> {
 		this.client = client;
 	}
 
-	async getOrCreate(guildId: string): Promise<MusicManager> {
+	getOrCreate(guildId: string): MusicManager {
 		return this.get(guildId) ?? this.create(guildId);
 	}
 
-	async create(guildId: string): Promise<MusicManager> {
+	create(guildId: string): MusicManager {
 		const player = new MusicManager(this.client, guildId);
 		this.set(guildId, player);
 		return player;

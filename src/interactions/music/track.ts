@@ -19,7 +19,7 @@ export default class Track extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = await this.client.musics.get(interaction.guildId);
+		const manager = this.client.musics.getOrCreate(interaction.guildId);
 
 		const trackNo = interaction.options.getNumber(this.options[0].name, true);
 		const metadata = await manager!.skip(trackNo);

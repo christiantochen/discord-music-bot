@@ -51,7 +51,7 @@ export default class InteractionHandler extends Collection<
 
 		const { CLIENT_ID } = process.env;
 
-		const guilds = await this.client.guilds.cache;
+		const guilds = this.client.guilds.cache;
 
 		guilds.forEach((guild) => {
 			rest.put(Routes.applicationGuildCommands(CLIENT_ID!, guild.id), {

@@ -11,7 +11,7 @@ export default class Stop extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = await this.client.musics.get(interaction.guildId);
+		const manager = this.client.musics.getOrCreate(interaction.guildId);
 		manager!.stop(true);
 
 		return interaction.editReply({

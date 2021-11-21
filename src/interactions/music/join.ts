@@ -14,7 +14,7 @@ import createEmbed from "../../libs/utils/createEmbed";
 export default class Join extends Interaction {
 	@isMemberInVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = await this.client.musics.getOrCreate(interaction.guildId);
+		const manager = this.client.musics.getOrCreate(interaction.guildId);
 		const member = interaction.member as GuildMember;
 		const memberChannel = interaction.channel as TextChannel;
 		const voiceChannel = member.voice.channel as VoiceChannel;

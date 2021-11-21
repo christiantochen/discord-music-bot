@@ -24,9 +24,9 @@ export default class Loop extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = await this.client.musics.get(interaction.guildId);
+		const manager = this.client.musics.getOrCreate(interaction.guildId);
 		const mode = interaction.options.getString(this.options[0].name, true);
-		await manager!.setLoopMode(mode);
+		await manager!.setLoop(mode);
 
 		return interaction.editReply({
 			embeds: [
