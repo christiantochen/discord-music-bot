@@ -1,56 +1,64 @@
 {
-  "name": "discord-music-bot",
-  "version": "0.0.1",
-  "description": "Discord Music Bot",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "author": "Christianto Chen",
-  "homepage": "https://github.com/christiantochen/discord-music-bot.git#readme",
-  "keywords": [
-    "discordjs",
-    "typescript",
-    "discord",
-    "bot",
-    "music bot"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/christiantochen/discord-music-bot.git"
-  },
-  "bugs": {
-    "url": "https://github.com/christiantochen/discord-music-bot/issues"
-  },
-  "scripts": {
-    "build": "./node_modules/typescript/bin/tsc",
-    "build:clean": "git clean -d -x -e node_modules -e .env -f && npm run build",
-    "build:watch": "./node_modules/typescript/bin/tsc --watch",
-    "start": "node .",
-    "dev": "nodemon ./src/index.ts",
-    "postinstall": "npm run build"
-  },
-  "dependencies": {
-    "@discordjs/builders": "^0.8.2",
-    "@discordjs/opus": "^0.7.0",
-    "@discordjs/rest": "^0.1.0-canary.0",
-    "@discordjs/voice": "^0.7.5",
-    "discord-api-types": "^0.24.0",
-    "discord.js": "^13.3.1",
-    "dotenv": "^10.0.0",
-    "ffmpeg-static": "^4.4.0",
-    "flat": "^5.0.2",
-    "libsodium-wrappers": "^0.7.9",
-    "moment": "^2.29.1",
-    "mongodb": "^4.2.0",
-    "play-dl": "^1.3.1",
-    "tslog": "^3.2.2"
-  },
-  "devDependencies": {
-    "@types/node": "^16.11.9",
-    "nodemon": "^2.0.15",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
-  },
-  "engines": {
-    "node": ">=16.6.0"
-  }
+	"name": "discord-music-bot",
+	"version": "0.0.1",
+	"description": "Discord Music Bot",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"author": "Christianto Chen",
+	"homepage": "https://github.com/christiantochen/discord-music-bot.git#readme",
+	"keywords": [
+		"discordjs",
+		"typescript",
+		"discord",
+		"bot",
+		"music bot"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/christiantochen/discord-music-bot.git"
+	},
+	"bugs": {
+		"url": "https://github.com/christiantochen/discord-music-bot/issues"
+	},
+	"scripts": {
+		"build": "./node_modules/typescript/bin/tsc",
+		"build:clean": "git clean -d -x -e node_modules -e .env -f && npm run build",
+		"build:watch": "./node_modules/typescript/bin/tsc --watch",
+		"start": "node .",
+		"dev": "nodemon ./src/index.ts",
+		"lint": "eslint . --ext .ts --ignore-path .gitignore",
+		"lint:fix": "eslint . --ext .ts --ignore-path .gitignore --fix",
+		"format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+		"postinstall": "npm run build"
+	},
+	"dependencies": {
+		"@discordjs/builders": "^0.8.2",
+		"@discordjs/opus": "^0.7.0",
+		"@discordjs/rest": "^0.1.0-canary.0",
+		"@discordjs/voice": "^0.7.5",
+		"discord-api-types": "^0.24.0",
+		"discord.js": "^13.3.1",
+		"dotenv": "^10.0.0",
+		"ffmpeg-static": "^4.4.0",
+		"flat": "^5.0.2",
+		"libsodium-wrappers": "^0.7.9",
+		"moment": "^2.29.1",
+		"mongodb": "^4.2.0",
+		"play-dl": "^1.3.1",
+		"tslog": "^3.2.2"
+	},
+	"devDependencies": {
+		"@types/node": "^16.11.9",
+		"@typescript-eslint/eslint-plugin": "^5.4.0",
+		"@typescript-eslint/parser": "^5.4.0",
+		"eslint": "^8.2.0",
+		"eslint-config-prettier": "^8.3.0",
+		"nodemon": "^2.0.15",
+		"prettier": "^2.4.1",
+		"ts-node": "^10.4.0",
+		"typescript": "^4.5.2"
+	},
+	"engines": {
+		"node": ">=16.6.0"
+	}
 }

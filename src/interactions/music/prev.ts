@@ -2,28 +2,28 @@ import { CommandInteraction } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
 import Interaction from "../../libs/structures/Interaction";
 import {
-  isMemberInVoiceChannel,
-  IsMemberOnSameVoiceChannel,
+	isMemberInVoiceChannel,
+	IsMemberOnSameVoiceChannel
 } from "../../libs/decorators/music";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Prev extends Interaction {
-  @isMemberInVoiceChannel()
-  @IsMemberOnSameVoiceChannel()
-  async execute(interaction: CommandInteraction) {
-    const manager = await this.client.musics.get(interaction.guildId);
-    const metadata = await manager!.prev();
-    const message = createEmbed();
+	@isMemberInVoiceChannel()
+	@IsMemberOnSameVoiceChannel()
+	async execute(interaction: CommandInteraction) {
+		const manager = await this.client.musics.get(interaction.guildId);
+		const metadata = await manager!.prev();
+		const message = createEmbed();
 
-    if (metadata) {
-      message.addField(
-        getFixture("music:NOW_PLAYING"),
-        getFixture("music:METADATA", metadata)
-      );
-    } else {
-      message.setDescription(getFixture("music:FIRST_SONG"));
-    }
+		if (metadata) {
+			message.addField(
+				getFixture("music:NOW_PLAYING"),
+				getFixture("music:METADATA", metadata)
+			);
+		} else {
+			message.setDescription(getFixture("music:FIRST_SONG"));
+		}
 
-    return interaction.editReply({ embeds: [message] });
-  }
+		return interaction.editReply({ embeds: [message] });
+	}
 }

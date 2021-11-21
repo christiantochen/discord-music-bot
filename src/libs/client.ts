@@ -7,26 +7,26 @@ import SettingHandler from "../handlers/settingHandler";
 import InteractionHandler from "../handlers/interactionHandler";
 
 export default class BotClient extends Client {
-  public log: Logger = new Logger();
-  public database = new Database(this);
-  public settings = new SettingHandler(this);
+	public log: Logger = new Logger();
+	public database = new Database(this);
+	public settings = new SettingHandler(this);
 
-  public interactions = new InteractionHandler(this);
-  public events = new EventHandler(this);
-  public musics = new MusicHandler(this);
+	public interactions = new InteractionHandler(this);
+	public events = new EventHandler(this);
+	public musics = new MusicHandler(this);
 
-  public caches = {};
+	public caches = {};
 
-  constructor() {
-    super({
-      intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_PRESENCES,
-        Intents.FLAGS.GUILD_VOICE_STATES,
-      ],
-    });
+	constructor() {
+		super({
+			intents: [
+				Intents.FLAGS.GUILDS,
+				Intents.FLAGS.GUILD_MESSAGES,
+				Intents.FLAGS.GUILD_PRESENCES,
+				Intents.FLAGS.GUILD_VOICE_STATES
+			]
+		});
 
-    this.login(process.env.TOKEN!);
-  }
+		this.login(process.env.TOKEN!);
+	}
 }

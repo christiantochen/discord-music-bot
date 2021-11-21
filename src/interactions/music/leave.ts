@@ -2,26 +2,26 @@ import { CommandInteraction } from "discord.js";
 import { getFixture } from "../../libs/fixtures";
 import Interaction from "../../libs/structures/Interaction";
 import {
-  isMemberInVoiceChannel,
-  IsMemberOnSameVoiceChannel,
+	isMemberInVoiceChannel,
+	IsMemberOnSameVoiceChannel
 } from "../../libs/decorators/music";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Leave extends Interaction {
-  @isMemberInVoiceChannel()
-  @IsMemberOnSameVoiceChannel()
-  async execute(interaction: CommandInteraction) {
-    const manager = await this.client.musics.get(interaction.guildId);
+	@isMemberInVoiceChannel()
+	@IsMemberOnSameVoiceChannel()
+	async execute(interaction: CommandInteraction) {
+		const manager = await this.client.musics.get(interaction.guildId);
 
-    manager!.disconnect();
-    this.client.musics.delete(interaction.guildId);
+		manager!.disconnect();
+		this.client.musics.delete(interaction.guildId);
 
-    return interaction.editReply({
-      embeds: [
-        createEmbed({
-          description: getFixture("music/leave:LEAVE_CHANNEL"),
-        }),
-      ],
-    });
-  }
+		return interaction.editReply({
+			embeds: [
+				createEmbed({
+					description: getFixture("music/leave:LEAVE_CHANNEL")
+				})
+			]
+		});
+	}
 }

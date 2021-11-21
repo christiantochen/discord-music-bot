@@ -1,4 +1,4 @@
 export default {
-  HELP: "HELP",
-  DESCRIPTION: "Display default information.",
+	HELP: "HELP",
+	DESCRIPTION: "Display default information."
 };

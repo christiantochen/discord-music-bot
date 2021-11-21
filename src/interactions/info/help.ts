@@ -3,9 +3,9 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Help extends Interaction {
-  async execute(interaction: CommandInteraction) {
-    const message = createEmbed({ title: "HELP" }).setDescription(
-      `
+	async execute(interaction: CommandInteraction) {
+		const message = createEmbed({ title: "HELP" }).setDescription(
+			`
       **Play a music**
       \`/play <<query>> \`
       query can be words or url.
@@ -18,10 +18,10 @@ export default class Help extends Interaction {
       Example: \`/remove number:1\` 
       Example(2): \`/remove number:1 count:3\`
 
-      **Repeat mode** 
-      \`/repeat <<mode>>\`
+      **Loop mode** 
+      \`/loop <<mode>>\`
       3 modes are available. \`[all|current|off]\`      
-      Example: \`/repeat mode:current\`
+      Example: \`/loop mode:current\`
 
       **Jump to specific track in queue** 
       \`/track <<number>>\`
@@ -40,8 +40,8 @@ export default class Help extends Interaction {
       **Leave voice channel** \`/leave\` 
       In any case bug happen, use this command to reset the bot.
       `
-    );
+		);
 
-    return interaction.editReply({ embeds: [message] });
-  }
+		return interaction.editReply({ embeds: [message] });
+	}
 }
