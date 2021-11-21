@@ -21,7 +21,7 @@ export default class Play extends Interaction {
 
 	@isMemberInVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = await this.client.musics.getOrCreate(interaction.guildId);
+		const manager = this.client.musics.getOrCreate(interaction.guildId);
 		const member = interaction.member as GuildMember;
 		const message = createEmbed();
 		const query = interaction.options.getString(this.options[0].name, true);

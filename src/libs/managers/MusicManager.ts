@@ -7,6 +7,7 @@ import {
 import { TextChannel, VoiceChannel } from "discord.js";
 import BotClient from "../client";
 import { getFixture } from "../fixtures";
+import track from "../fixtures/music/track";
 import MusicPlayer, { LoopMode } from "../structures/MusicPlayer";
 import createEmbed from "../utils/createEmbed";
 
@@ -60,10 +61,10 @@ export default class MusicManager {
 		this.subscription = undefined;
 	}
 
-	async setLoopMode(mode: string): Promise<void> {
+	async setLoop(mode: string): Promise<void> {
 		this.client.log.info(mode);
-		await this.player.setLoop(mode as LoopMode);
-		await this.save();
+		this.player.setLoop(mode as LoopMode);
+		return this.save();
 	}
 
 	async prev(): Promise<any | undefined> {
@@ -87,12 +88,12 @@ export default class MusicManager {
 		return this.player.stop(force);
 	}
 
-	async remove(
+	remove(
 		trackAt: number,
 		count?: number | null | undefined
-	): Promise<boolean | undefined> {
+	): boolean | undefined {
 		this.client.log.info(trackAt, count);
-		const removed = await this.player.remove(trackAt, count);
+		const removed = this.player.remove(trackAt, count);
 		return removed?.length > 0;
 	}
 
@@ -105,15 +106,20 @@ export default class MusicManager {
 		return this.player.tracks.length;
 	}
 
-	async show(): Promise<any[]> {
+	getTracks(): any[] {
 		this.client.log.info();
 		const median = Math.floor(this.pageLimit / 2);
 		const { tracks, trackAt } = this.player;
 		let trackStart = 1;
 
 		if (tracks.length > this.pageLimit && tracks.length - trackAt < median) {
+			console.log(
+				trackAt,
+				this.pageLimit - (tracks.length - trackAt) - 1,
+				tracks.length - trackAt
+			);
 			trackStart = trackAt - (this.pageLimit - (tracks.length - trackAt) - 1);
-		} else if (trackAt > median) {
+		} else if (tracks.length > this.pageLimit && trackAt > median) {
 			trackStart = trackAt - median;
 		}
 
@@ -164,7 +170,22 @@ export default class MusicManager {
 		if (this.player.loop === "current") metadata = await this.player.restart();
 		else metadata = await this.player.next();
 
-		if (metadata) return this.send(getFixture("music:NOW_PLAYING"), metadata);
+		if (metadata) {
+			const channel = this.client.channels.cache.get(this.channelId!);
+
+			if (channel instanceof TextChannel) {
+				channel.send({
+					embeds: [
+						createEmbed().addField(
+							`NOW PLAYING TRACK ${this.player.trackAt}`,
+							getFixture("music:METADATA", metadata)
+						)
+					]
+				});
+			}
+
+			return;
+		}
 
 		return this.setTimeout();
 	}
@@ -189,18 +210,5 @@ export default class MusicManager {
 
 		this.player.load(data?.music?.tracks);
 		this.player.setLoop(data?.music?.loop);
-	}
-
-	private async send(title: string, metadata: any): Promise<void> {
-		this.client.log.info();
-		const channel = this.client.channels.cache.get(
-			this.channelId!
-		) as TextChannel;
-
-		await channel.send({
-			embeds: [
-				createEmbed().addField(title, getFixture("music:METADATA", metadata))
-			]
-		});
 	}
 }

@@ -11,19 +11,17 @@ export default class Show extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = await this.client.musics.get(interaction.guildId);
+		const manager = this.client.musics.getOrCreate(interaction.guildId);
 		const message = createEmbed();
 		const { tracks, loop } = manager!.getInfo();
-		const tracklist = await manager!.show();
+		const tracklist = manager!.getTracks();
 		let description = getFixture("music/show:EMPTY");
 
 		if (tracklist.length > 0)
 			description = tracklist.reduce((prev, current) => `${prev}\n${current}`);
 
 		message.addField(getFixture("music/show:TRACK_LIST"), description);
-		message.setFooter(
-			`Loop mode: ${loop}\t|\tTotal tracks: ${tracks.length}`
-		);
+		message.setFooter(`Loop mode: ${loop}\t|\tTotal tracks: ${tracks.length}`);
 
 		return interaction.editReply({ embeds: [message] });
 	}

@@ -1,9 +1,4 @@
-import {
-	SlashCommandBuilder,
-	SlashCommandNumberOption,
-	SlashCommandStringOption,
-	SlashCommandUserOption
-} from "@discordjs/builders";
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types";
 import BotClient from "../client";
 
@@ -36,12 +31,7 @@ export default class Interaction {
 			command.setDefaultPermission(this.default_permission);
 
 		this.options.forEach((option) => {
-			if (option instanceof SlashCommandUserOption)
-				command.addUserOption(option);
-			if (option instanceof SlashCommandStringOption)
-				command.addStringOption(option);
-			if (option instanceof SlashCommandNumberOption)
-				command.addNumberOption(option);
+			command.options.push(option);
 		});
 
 		return command.toJSON();

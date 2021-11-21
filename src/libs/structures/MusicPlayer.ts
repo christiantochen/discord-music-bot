@@ -10,13 +10,14 @@ export type LoopMode = "off" | "current" | "all";
 export default class MusicPlayer extends AudioPlayer {
 	loop: LoopMode = "off";
 	tracks: any[] = [];
+	// trackAt start from 0, so when used as index need to -1
 	trackAt = 0;
 
 	constructor() {
 		super({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
 	}
 
-	async load(tracks: any[] | undefined) {
+	load(tracks: any[] | undefined): void {
 		if (tracks) this.tracks = tracks;
 	}
 
@@ -32,6 +33,8 @@ export default class MusicPlayer extends AudioPlayer {
 	async add(metadata: any): Promise<any | undefined> {
 		this.tracks.push(metadata);
 
+		// if first time or player currently not playing anything
+		// then immediately play the newly added track
 		if (
 			this.tracks.length === 1 ||
 			this.state.status === AudioPlayerStatus.Idle
@@ -69,17 +72,20 @@ export default class MusicPlayer extends AudioPlayer {
 		return this.play(this.tracks[this.trackAt - 1]);
 	}
 
-	async remove(
+	remove(
 		trackFrom: number,
 		count?: number | null | undefined
-	): Promise<any | undefined> {
+	): any | undefined {
 		if (trackFrom < 0) return;
 		if (count && count < 1) return;
-		else count = 1;
-		if (this.tracks.length < trackFrom + count) return;
+		else if (!count) count = 1;
+		if (trackFrom + count - 1 > this.tracks.length) return;
 
+		// get current playing track
 		const track = this.tracks[this.trackAt - 1];
+		// remove tracks
 		const removedTrack = this.tracks.splice(trackFrom - 1, count);
+		// update current track position
 		this.trackAt = this.tracks.findIndex((v) => v.id === track.id) + 1;
 
 		return removedTrack;
