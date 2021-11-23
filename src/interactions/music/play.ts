@@ -21,7 +21,7 @@ export default class Play extends Interaction {
 
 	@isMemberInVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId);
 		const member = interaction.member as GuildMember;
 		const message = createEmbed();
 		const query = interaction.options.getString(this.options[0].name, true);
@@ -34,9 +34,9 @@ export default class Play extends Interaction {
 
 		const memberChannel = interaction.channel as TextChannel;
 		const voiceChannel = member.voice.channel as VoiceChannel;
-		await manager.connect(voiceChannel, memberChannel);
+		await player.connect(voiceChannel, memberChannel);
 
-		const trackAt = await manager.add(metadata);
+		const trackAt = await player.add(metadata);
 		const title = trackAt
 			? getFixture("music:TRACK_AT", { trackAt })
 			: getFixture("music:NOW_PLAYING");

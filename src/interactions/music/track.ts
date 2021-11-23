@@ -19,10 +19,10 @@ export default class Track extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId);
 
 		const trackNo = interaction.options.getNumber(this.options[0].name, true);
-		const metadata = await manager!.skip(trackNo);
+		const metadata = await player!.skip(trackNo);
 
 		const message = createEmbed();
 

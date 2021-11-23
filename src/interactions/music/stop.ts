@@ -11,8 +11,8 @@ export default class Stop extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = this.client.musics.getOrCreate(interaction.guildId);
-		manager!.stop(true);
+		const player = this.client.musics.getOrCreate(interaction.guildId);
+		player!.stop(true);
 
 		return interaction.editReply({
 			embeds: [createEmbed({ description: getFixture("music/stop:STOP") })]

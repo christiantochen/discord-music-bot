@@ -1,8 +1,8 @@
 import Collection from "@discordjs/collection";
 import BotClient from "../libs/client";
-import MusicManager from "../libs/managers/MusicManager";
+import MusicPlayer from "../libs/structures/MusicPlayer";
 
-export default class MusicHandler extends Collection<string, MusicManager> {
+export default class MusicHandler extends Collection<string, MusicPlayer> {
 	readonly client: BotClient;
 
 	constructor(client: BotClient) {
@@ -10,12 +10,12 @@ export default class MusicHandler extends Collection<string, MusicManager> {
 		this.client = client;
 	}
 
-	getOrCreate(guildId: string): MusicManager {
+	getOrCreate(guildId: string): MusicPlayer {
 		return this.get(guildId) ?? this.create(guildId);
 	}
 
-	create(guildId: string): MusicManager {
-		const player = new MusicManager(this.client, guildId);
+	create(guildId: string): MusicPlayer {
+		const player = new MusicPlayer(this.client, guildId);
 		this.set(guildId, player);
 		return player;
 	}

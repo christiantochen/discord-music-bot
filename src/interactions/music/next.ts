@@ -11,8 +11,8 @@ export default class Next extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = this.client.musics.getOrCreate(interaction.guildId);
-		const metadata = await manager!.next();
+		const player = this.client.musics.getOrCreate(interaction.guildId);
+		const metadata = await player!.next();
 		const message = createEmbed();
 
 		if (metadata) {

@@ -22,16 +22,16 @@ export default class Remove extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const manager = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId);
 		const message = createEmbed();
 		const trackFrom = interaction.options.getNumber(this.options[0].name, true);
 		const count = interaction.options.getNumber(this.options[1].name);
-		const anyActiveTrack = manager!.anyActiveTrackInRange(trackFrom, count);
+		const { trackAt } = player;
 
-		if (anyActiveTrack) {
+		if (this.anyActiveTrackInRange(trackAt, trackFrom, count)) {
 			message.setDescription(getFixture("music/remove:ACTIVE_TRACK"));
 		} else {
-			const removed = manager!.remove(trackFrom!, count);
+			const removed = player!.remove(trackFrom!, count);
 			if (removed) {
 				const descriptionItem = { trackFrom, trackTo: trackFrom + count! - 1 };
 				const description = getFixture(
@@ -45,5 +45,18 @@ export default class Remove extends Interaction {
 		}
 
 		return interaction.editReply({ embeds: [message] });
+	}
+
+	anyActiveTrackInRange(
+		trackAt: number,
+		trackFrom: number,
+		count?: number | null | undefined
+	) {
+		const trackTo = count && count > 1 ? trackFrom + count : undefined;
+
+		return (
+			trackFrom === trackAt ||
+			(!!trackTo && trackAt >= trackTo && trackFrom <= trackAt)
+		);
 	}
 }

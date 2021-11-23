@@ -8,7 +8,7 @@ export default function decorator<
 		const method = descriptor.value;
 		descriptor.value = async function (interaction: CommandInteraction) {
 			const message = await func(interaction);
-			
+
 			if (message) {
 				return interaction.editReply({
 					embeds: [createEmbed({ description: message })]
