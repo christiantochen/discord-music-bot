@@ -168,14 +168,21 @@ export default class MusicManager {
 	}
 
 	private async onIdle(): Promise<void> {
-		this.client.log.info();
+		this.client.log.info("noConnection", !this.connection);
 		if (!this.connection) return;
+		this.client.log.info("stopCalled", this.stopCalled);
 		if (this.stopCalled) return this.setTimeout();
 
 		let metadata;
 
-		if (this.player.loop === "current") metadata = await this.player.restart();
-		else metadata = await this.player.next();
+		this.client.log.info("checkLoop", this.player.loop);
+		if (this.player.loop === "current") {
+			metadata = await this.player.restart();
+			this.client.log.info("restart", metadata?.title);
+		} else {
+			metadata = await this.player.next();
+			this.client.log.info("next", metadata?.title);
+		}
 
 		if (metadata) {
 			const channel = this.client.channels.cache.get(this.channelId!);
