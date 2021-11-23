@@ -82,11 +82,20 @@ export default class MusicPlayer extends AudioPlayer {
 		if (trackFrom + count - 1 > this.tracks.length) return;
 
 		// get current playing track
-		const track = this.tracks[this.trackAt - 1];
+		// ignore if there's no track playing
+		let track: any;
+		if (this.trackAt != 0) {
+			track = this.tracks[this.trackAt - 1];
+		}
+
 		// remove tracks
 		const removedTrack = this.tracks.splice(trackFrom - 1, count);
+
 		// update current track position
-		this.trackAt = this.tracks.findIndex((v) => v.id === track.id) + 1;
+		// ignore if there's no track playing
+		if (track) {
+			this.trackAt = this.tracks.findIndex((v) => v.id === track.id) + 1;
+		}
 
 		return removedTrack;
 	}

@@ -7,7 +7,6 @@ import {
 import { TextChannel, VoiceChannel } from "discord.js";
 import BotClient from "../client";
 import { getFixture } from "../fixtures";
-import track from "../fixtures/music/track";
 import MusicPlayer, { LoopMode } from "../structures/MusicPlayer";
 import createEmbed from "../utils/createEmbed";
 
@@ -53,12 +52,13 @@ export default class MusicManager {
 
 	disconnect(): void {
 		this.client.log.info();
-		this.player.stop(true);
+
 		this.connection?.destroy();
 		this.connection = undefined;
 		this.voiceChannelId = undefined;
 		this.subscription?.unsubscribe();
 		this.subscription = undefined;
+		this.stop(true);
 	}
 
 	async setLoop(mode: string): Promise<void> {
@@ -82,7 +82,7 @@ export default class MusicManager {
 		return this.player.skip(trackNo);
 	}
 
-	stop(force?: boolean | undefined): boolean {
+	async stop(force?: boolean | undefined): Promise<boolean> {
 		this.client.log.info(force);
 		this.stopCalled = true;
 		return this.player.stop(force);
@@ -113,11 +113,6 @@ export default class MusicManager {
 		let trackStart = 1;
 
 		if (tracks.length > this.pageLimit && tracks.length - trackAt < median) {
-			console.log(
-				trackAt,
-				this.pageLimit - (tracks.length - trackAt) - 1,
-				tracks.length - trackAt
-			);
 			trackStart = trackAt - (this.pageLimit - (tracks.length - trackAt) - 1);
 		} else if (tracks.length > this.pageLimit && trackAt > median) {
 			trackStart = trackAt - median;
@@ -136,8 +131,8 @@ export default class MusicManager {
 	}
 
 	getInfo() {
-		const { tracks, trackAt, loop } = this.player;
-		return { tracks, trackAt, loop };
+		const { tracks, trackAt, loop, state } = this.player;
+		return { tracks, trackAt, loop, state };
 	}
 
 	anyActiveTrackInRange(trackFrom: number, count?: number | null | undefined) {
@@ -151,13 +146,25 @@ export default class MusicManager {
 		);
 	}
 
-	private onPlay() {
-		this.client.log.info();
+	setTimeout() {
+		if (!this.timeout) {
+			this.client.log.info("setTimeout", this.idleTimer);
+			this.stopCalled = false;
+			this.timeout = setTimeout(() => this.disconnect(), this.idleTimer);
+		}
+	}
+
+	clearTimeout() {
 		if (this.timeout) {
 			this.client.log.info("clearTimeout");
 			clearTimeout(this.timeout);
 			this.timeout = undefined;
 		}
+	}
+
+	private onPlay() {
+		this.client.log.info();
+		this.clearTimeout();
 	}
 
 	private async onIdle(): Promise<void> {
@@ -177,7 +184,7 @@ export default class MusicManager {
 				channel.send({
 					embeds: [
 						createEmbed().addField(
-							`NOW PLAYING TRACK ${this.player.trackAt}`,
+							`NOW PLAYING on TRACK #${this.player.trackAt}`,
 							getFixture("music:METADATA", metadata)
 						)
 					]
@@ -188,12 +195,6 @@ export default class MusicManager {
 		}
 
 		return this.setTimeout();
-	}
-
-	private async setTimeout() {
-		this.client.log.info("setTimeout", this.idleTimer);
-		this.stopCalled = false;
-		this.timeout = setTimeout(() => this.disconnect, this.idleTimer);
 	}
 
 	private async save() {
