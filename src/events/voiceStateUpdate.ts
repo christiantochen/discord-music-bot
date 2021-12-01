@@ -17,6 +17,7 @@ export default class VoiceStateUpdate extends Event {
 			// Only clear if status is playing
 			// because there's no point on clearing it's timeout when the player itself is idle
 			if (player?.state.status === AudioPlayerStatus.Playing) {
+				this.client.log.info("Not alone anymore", "clear timeout");
 				player?.clearTimeout();
 			}
 		}
@@ -26,6 +27,7 @@ export default class VoiceStateUpdate extends Event {
 			// and the last member is the bot itself
 			// set timeout for player to disconnect
 			if (lastMember?.user.id === this.client.user?.id) {
+				this.client.log.info("alone", "set self timeout");
 				this.client.musics.get(lastMember?.guild.id!)?.setTimeout();
 			}
 		}
@@ -35,6 +37,7 @@ export default class VoiceStateUpdate extends Event {
 			newState.member?.user.id === this.client.user?.id &&
 			!newState.member?.voice.channel
 		) {
+			this.client.log.info("disconnected");
 			this.client.musics.delete(newState.member?.guild.id!);
 		}
 	}

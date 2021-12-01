@@ -6,9 +6,15 @@ import {
 	IsMemberOnSameVoiceChannel
 } from "../../libs/decorators/music";
 import createEmbed from "../../libs/utils/createEmbed";
+import { SlashCommandIntegerOption } from "@discordjs/builders";
 
 export default class Show extends Interaction {
 	pageLimit = 5;
+	options = [
+		new SlashCommandIntegerOption()
+			.setName("page")
+			.setDescription("Page Number")
+	];
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
@@ -17,31 +23,45 @@ export default class Show extends Interaction {
 		const message = createEmbed();
 		const { tracks, trackAt, loop } = player;
 
-		const tracklist = this.generateTracklist(tracks, trackAt);
+		const pageNumber = interaction.options.getInteger(this.options[0].name);
+		const tracklist = this.generateTracklist(tracks, trackAt, pageNumber);
 
-		let description = getFixture("music/show:EMPTY");
+		if (!tracklist)
+			return interaction.editReply({
+				embeds: [message.setDescription("Invalid Page")]
+			});
 
-		if (tracklist.length > 0)
-			description = tracklist.reduce((prev, current) => `${prev}\n${current}`);
-
-		message.addField(getFixture("music/show:TRACK_LIST"), description);
-		message.setFooter(`Loop mode: ${loop}\t|\tTotal tracks: ${tracks.length}`);
+		message.addField(
+			getFixture("music/show:TRACK_LIST"),
+			tracklist.description ?? getFixture("music/show:EMPTY")
+		);
+		message.setFooter(
+			`Pages: ${tracklist.currentPage}/${tracklist.totalPage} | Loop Mode: ${loop} | Total: ${tracks.length}`
+		);
 
 		return interaction.editReply({ embeds: [message] });
 	}
 
 	// REFACTOR: refactor paging to perpage with next/prev components
-	private generateTracklist(tracks: any[], trackAt = 0): any[] {
-		const median = Math.floor(this.pageLimit / 2);
-		let trackStart = 1;
+	private generateTracklist(
+		tracks: any[],
+		trackAt = 0,
+		targetPage?: number | null | undefined
+	):
+		| {
+				totalPage: number;
+				currentPage: number;
+				description: string | undefined;
+		  }
+		| undefined {
+		const totalPage = Math.ceil(tracks.length / this.pageLimit);
 
-		if (tracks.length > this.pageLimit && tracks.length - trackAt < median) {
-			trackStart = trackAt - (this.pageLimit - (tracks.length - trackAt) - 1);
-		} else if (tracks.length > this.pageLimit && trackAt > median) {
-			trackStart = trackAt - median;
-		}
+		if (targetPage && totalPage < targetPage) return;
 
-		return tracks
+		const currentPage =
+			targetPage ?? (trackAt > 0 ? Math.ceil(trackAt / this.pageLimit) : 1);
+		const trackStart = currentPage * this.pageLimit - this.pageLimit + 1;
+		const tracklist = tracks
 			.slice(trackStart - 1, trackStart - 1 + this.pageLimit)
 			.map((track, index) => {
 				let message = getFixture("music:METADATA", track);
@@ -50,5 +70,12 @@ export default class Show extends Interaction {
 
 				return `**${trackStart + index}.**\t${message}`;
 			});
+
+		let description;
+
+		if (tracklist.length > 0)
+			description = tracklist.reduce((prev, current) => `${prev}\n${current}`);
+
+		return { totalPage, currentPage, description };
 	}
 }

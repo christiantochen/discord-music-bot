@@ -23,11 +23,9 @@ export default class MusicPlayer extends AudioPlayer {
 	trackAt = 0;
 	idleTimer = 60000;
 
-	// private readonly player: MusicPlayer;
 	private connection: VoiceConnection | undefined;
 	private stopCalled = false;
 	private timeout: NodeJS.Timeout | undefined;
-	private readonly pageLimit = 5;
 	private lastMessage: Message | undefined;
 
 	constructor(client: BotClient, guildId: string) {
@@ -87,6 +85,12 @@ export default class MusicPlayer extends AudioPlayer {
 	async skip(trackNo: number): Promise<any | undefined> {
 		if (trackNo < 1) return;
 		if (trackNo > this.tracks.length) return;
+		if (
+			trackNo === this.trackAt &&
+			this.state.status === AudioPlayerStatus.Playing
+		)
+			return;
+
 		this.trackAt = trackNo;
 		return this.play(this.tracks[this.trackAt - 1]);
 	}
