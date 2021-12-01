@@ -5,7 +5,7 @@ import {
 	NoSubscriberBehavior,
 	VoiceConnection
 } from "@discordjs/voice";
-import { TextChannel, VoiceChannel } from "discord.js";
+import { Message, TextChannel, VoiceChannel } from "discord.js";
 import BotClient from "../client";
 import { getFixture } from "../fixtures";
 import createEmbed from "../utils/createEmbed";
@@ -28,6 +28,7 @@ export default class MusicPlayer extends AudioPlayer {
 	private stopCalled = false;
 	private timeout: NodeJS.Timeout | undefined;
 	private readonly pageLimit = 5;
+	private lastMessage: Message | undefined;
 
 	constructor(client: BotClient, guildId: string) {
 		super({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
@@ -39,7 +40,7 @@ export default class MusicPlayer extends AudioPlayer {
 
 	async connect(voiceChannel: VoiceChannel, memberChannel: TextChannel) {
 		if (this.voiceChannelId && this.voiceChannelId === voiceChannel.id) return;
-		this.client.log.info();
+
 		await this.load();
 
 		this.channelId = memberChannel.id;
@@ -55,14 +56,12 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	disconnect(): void {
-		this.client.log.info();
 		this.connection?.destroy();
 		this.connection = undefined;
 		this.voiceChannelId = undefined;
 	}
 
 	async setLoop(mode: string): Promise<void> {
-		this.client.log.info(mode);
 		this.loop = (mode as LoopMode) || "off";
 		return this.save();
 	}
@@ -73,15 +72,12 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	async prev(): Promise<any | undefined> {
-		this.client.log.info();
 		if (this.trackAt <= 1) return;
 		this.trackAt--;
 		return this.play(this.tracks[this.trackAt - 1]);
 	}
 
 	async next(): Promise<any | undefined> {
-		this.client.log.info();
-
 		if (this.trackAt < this.tracks.length) this.trackAt++;
 		else if (this.loop === "all") this.trackAt = 1;
 		else if (this.loop === "off") return;
@@ -89,7 +85,6 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	async skip(trackNo: number): Promise<any | undefined> {
-		this.client.log.info(trackNo);
 		if (trackNo < 1) return;
 		if (trackNo > this.tracks.length) return;
 		this.trackAt = trackNo;
@@ -97,13 +92,11 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	stop(force?: boolean | undefined): boolean {
-		this.client.log.info(force);
 		this.stopCalled = true;
 		return super.stop(force);
 	}
 
 	remove(targetTrack: number, count: number | null): boolean | undefined {
-		this.client.log.info(targetTrack, count);
 		if (!count) count = 1;
 		if (targetTrack < 0) return;
 		if (count && count < 1) return;
@@ -129,7 +122,6 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	async add(metadata: any): Promise<any | undefined> {
-		this.client.log.info(metadata?.title);
 		this.tracks.push(metadata);
 		await this.save();
 
@@ -148,7 +140,6 @@ export default class MusicPlayer extends AudioPlayer {
 
 	setTimeout() {
 		if (!this.timeout) {
-			this.client.log.info("setTimeout", this.idleTimer);
 			this.stopCalled = false;
 			this.timeout = setTimeout(() => this.disconnect(), this.idleTimer);
 		}
@@ -156,14 +147,12 @@ export default class MusicPlayer extends AudioPlayer {
 
 	clearTimeout() {
 		if (this.timeout) {
-			this.client.log.info("clearTimeout");
 			clearTimeout(this.timeout);
 			this.timeout = undefined;
 		}
 	}
 
 	private onPlay() {
-		this.client.log.info();
 		this.clearTimeout();
 	}
 
@@ -188,14 +177,19 @@ export default class MusicPlayer extends AudioPlayer {
 			const channel = this.client.channels.cache.get(this.channelId!);
 
 			if (channel instanceof TextChannel) {
-				channel.send({
-					embeds: [
-						createEmbed().addField(
-							`NOW PLAYING TRACK #${this.trackAt}`,
-							getFixture("music:METADATA", metadata)
-						)
-					]
-				});
+				const message = createEmbed().addField(
+					`NOW PLAYING TRACK #${this.trackAt}`,
+					getFixture("music:METADATA", metadata)
+				);
+
+				if (
+					!this.lastMessage ||
+					channel.lastMessage?.id !== this.lastMessage.id
+				) {
+					this.lastMessage = await channel.send({ embeds: [message] });
+				} else {
+					this.lastMessage = await this.lastMessage.edit({ embeds: [message] });
+				}
 			}
 
 			return;
@@ -205,15 +199,12 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	private async save() {
-		this.client.log.info();
-
 		await this.client.settings?.update(this.guildId, {
 			music: { tracks: this.tracks, loop: this.loop }
 		});
 	}
 
 	private async load() {
-		this.client.log.info();
 		const data = await this.client.settings.getOrCreate(this.guildId);
 
 		if (data && data.music) {

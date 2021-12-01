@@ -47,7 +47,7 @@ export default class Remove extends Interaction {
 		return interaction.editReply({ embeds: [message] });
 	}
 
-	anyActiveTrackInRange(
+	private anyActiveTrackInRange(
 		trackAt: number,
 		trackFrom: number,
 		count?: number | null | undefined

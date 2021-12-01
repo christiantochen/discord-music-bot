@@ -30,8 +30,8 @@ export default class Show extends Interaction {
 		return interaction.editReply({ embeds: [message] });
 	}
 
-	generateTracklist(tracks: any[], trackAt = 0): any[] {
-		this.client.log.info();
+	// REFACTOR: refactor paging to perpage with next/prev components
+	private generateTracklist(tracks: any[], trackAt = 0): any[] {
 		const median = Math.floor(this.pageLimit / 2);
 		let trackStart = 1;
 
