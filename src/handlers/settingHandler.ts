@@ -7,7 +7,7 @@ const collection = "guilds";
 
 export default class SettingHandler extends Collection<string, GuildSettings> {
 	readonly client: BotClient;
-	private readonly database: Database;
+	private readonly database: Database | undefined;
 
 	constructor(client: BotClient) {
 		super();
