@@ -27,7 +27,6 @@ export default class MusicPlayer extends AudioPlayer {
 	private connection: VoiceConnection | undefined;
 	private stopCalled = false;
 	private timeout: NodeJS.Timeout | undefined;
-	private readonly pageLimit = 5;
 	private lastMessage: Message | undefined;
 
 	constructor(client: BotClient, guildId: string) {
