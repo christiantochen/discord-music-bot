@@ -45,7 +45,7 @@
 		"libsodium-wrappers": "^0.7.9",
 		"moment": "^2.29.1",
 		"mongodb": "^4.2.1",
-		"play-dl": "^1.4.0",
+		"play-dl": "^1.7.5",
 		"tslog": "^3.3.0"
 	},
 	"devDependencies": {
