@@ -43,7 +43,7 @@
 		"ffmpeg-static": "^4.4.0",
 		"flat": "^5.0.2",
 		"libsodium-wrappers": "^0.7.9",
-		"moment": "^2.29.1",
+		"moment": "^2.29.2",
 		"mongodb": "^4.2.1",
 		"play-dl": "^1.4.0",
 		"tslog": "^3.3.0"
