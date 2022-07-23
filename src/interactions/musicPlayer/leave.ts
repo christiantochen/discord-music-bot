@@ -1,26 +1,23 @@
 import { CommandInteraction } from "discord.js";
-import { getFixture } from "../../libs/fixtures";
-import Interaction from "../../libs/structures/Interaction";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
-} from "../../libs/decorators/music";
+} from "../../decorators";
+import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Leave extends Interaction {
+	description = "Bot will leave voice channel.";
+
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const player = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId!);
 
 		player!.disconnect();
 
 		return interaction.editReply({
-			embeds: [
-				createEmbed({
-					description: getFixture("music/leave:LEAVE_CHANNEL")
-				})
-			]
+			embeds: [createEmbed({ description: "Time to clean up." })]
 		});
 	}
 }

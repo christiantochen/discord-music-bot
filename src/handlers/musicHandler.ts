@@ -1,11 +1,11 @@
-import Collection from "@discordjs/collection";
-import BotClient from "../libs/client";
+import { Collection } from "discord.js";
+import Client from "../libs/client";
 import MusicPlayer from "../libs/structures/MusicPlayer";
 
 export default class MusicHandler extends Collection<string, MusicPlayer> {
-	readonly client: BotClient;
+	readonly client: Client;
 
-	constructor(client: BotClient) {
+	constructor(client: Client) {
 		super();
 		this.client = client;
 	}

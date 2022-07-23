@@ -3,12 +3,10 @@ import Event from "../libs/structures/Event";
 
 export default class interactionCreate extends Event {
 	async execute(interaction: Interaction) {
-		if (interaction.isCommand()) {
-			await interaction.deferReply();
-			const command = this.client.interactions.get(interaction.commandName);
-			return command!.execute(interaction);
-		}
+		if (!interaction.isChatInputCommand()) return;
 
-		return;
+		await interaction.deferReply();
+		const command = this.client.interactions.get(interaction.commandName);
+		return command!.execute(interaction);
 	}
 }

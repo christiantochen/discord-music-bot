@@ -7,8 +7,8 @@ import {
 } from "@discordjs/voice";
 import { Message, TextChannel, VoiceChannel } from "discord.js";
 import BotClient from "../client";
-import { getFixture } from "../fixtures";
 import createEmbed from "../utils/createEmbed";
+import parseMetadata from "../utils/parseMetadata";
 import { createAudio } from "../utils/play-dl";
 
 export type LoopMode = "off" | "current" | "all";
@@ -161,30 +161,32 @@ export default class MusicPlayer extends AudioPlayer {
 	}
 
 	private async onIdle(): Promise<void> {
-		this.client.log.info("noConnection", !this.connection);
+		console.log("noConnection", !this.connection);
 		if (!this.connection) return;
-		this.client.log.info("stopCalled", this.stopCalled);
+		console.log("stopCalled", this.stopCalled);
 		if (this.stopCalled) return this.setTimeout();
 
 		let metadata;
 
-		this.client.log.info("checkLoop", this.loop);
+		console.log("checkLoop", this.loop);
 		if (this.loop === "current") {
 			metadata = await this.play(this.tracks[this.trackAt - 1]);
-			this.client.log.info("restart", metadata?.title);
+			console.log("restart", metadata?.title);
 		} else {
 			metadata = await this.next();
-			this.client.log.info("next", metadata?.title);
+			console.log("next", metadata?.title);
 		}
 
 		if (metadata) {
 			const channel = this.client.channels.cache.get(this.channelId!);
 
 			if (channel instanceof TextChannel) {
-				const message = createEmbed().addField(
-					`NOW PLAYING TRACK #${this.trackAt}`,
-					getFixture("music:METADATA", metadata)
-				);
+				const message = createEmbed().addFields([
+					{
+						name: `NOW PLAYING TRACK #${this.trackAt}`,
+						value: parseMetadata(metadata)
+					}
+				]);
 
 				if (
 					!this.lastMessage ||

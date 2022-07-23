@@ -1,13 +1,13 @@
-import Collection from "@discordjs/collection";
-import BotClient from "../libs/client";
+import Client from "../libs/client";
 import Event from "../libs/structures/Event";
 import { join } from "path";
 import getAllFiles from "../libs/utils/getAllFiles";
+import { Collection } from "discord.js";
 
 export default class EventHandler extends Collection<string, Event> {
-	readonly client: BotClient;
+	readonly client: Client;
 
-	constructor(client: BotClient) {
+	constructor(client: Client) {
 		super();
 
 		this.client = client;
@@ -18,15 +18,12 @@ export default class EventHandler extends Collection<string, Event> {
 	private async init() {
 		const path = join(__dirname, "..", "events");
 
-		const files = getAllFiles(path).filter((file) =>
-			file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
-		);
+		const files = getAllFiles(path);
 
 		files.forEach((file) => {
 			const eventClass = ((r) => r.default || r)(require(file));
-			const eventFiles = file.split("/");
+			const eventFiles = file.split("\\");
 			const eventName = eventFiles[eventFiles.length - 1].split(".")[0];
-
 			const event: Event = new eventClass(this.client, eventName);
 
 			this.set(event.name, event);

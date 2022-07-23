@@ -1,14 +1,15 @@
 import { CommandInteraction } from "discord.js";
-import { getFixture } from "../../libs/fixtures";
 import Interaction from "../../libs/structures/Interaction";
+import createEmbed from "../../libs/utils/createEmbed";
+import { SlashCommandIntegerOption } from "@discordjs/builders";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
-} from "../../libs/decorators/music";
-import createEmbed from "../../libs/utils/createEmbed";
-import { SlashCommandIntegerOption } from "@discordjs/builders";
+} from "../../decorators";
+import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Show extends Interaction {
+	description = "Display the queue of the current tracks.";
 	pageLimit = 5;
 	options = [
 		new SlashCommandIntegerOption()
@@ -19,11 +20,12 @@ export default class Show extends Interaction {
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const player = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const message = createEmbed();
 		const { tracks, trackAt, loop } = player;
 
-		const pageNumber = interaction.options.getInteger(this.options[0].name);
+		const pageNumber =
+			(interaction.options.get(this.options[0].name)?.value as number) ?? 1;
 		const tracklist = this.generateTracklist(tracks, trackAt, pageNumber);
 
 		if (!tracklist)
@@ -31,13 +33,15 @@ export default class Show extends Interaction {
 				embeds: [message.setDescription("Invalid Page")]
 			});
 
-		message.addField(
-			getFixture("music/show:TRACK_LIST"),
-			tracklist.description ?? getFixture("music/show:EMPTY")
-		);
-		message.setFooter(
-			`Pages: ${tracklist.currentPage}/${tracklist.totalPage} | Loop Mode: ${loop} | Total: ${tracks.length}`
-		);
+		message.addFields([
+			{
+				name: "TRACK LIST",
+				value: tracklist.description ?? "No queue at the moment"
+			}
+		]);
+		message.setFooter({
+			text: `Pages: ${tracklist.currentPage}/${tracklist.totalPage} | Loop Mode: ${loop} | Total: ${tracks.length}`
+		});
 
 		return interaction.editReply({ embeds: [message] });
 	}
@@ -64,7 +68,7 @@ export default class Show extends Interaction {
 		const tracklist = tracks
 			.slice(trackStart - 1, trackStart - 1 + this.pageLimit)
 			.map((track, index) => {
-				let message = getFixture("music:METADATA", track);
+				let message = parseMetadata(track);
 
 				if (trackStart - 1 + index === trackAt - 1) message = `*${message}*`;
 

@@ -1,27 +1,29 @@
 import { CommandInteraction } from "discord.js";
-import { getFixture } from "../../libs/fixtures";
-import Interaction from "../../libs/structures/Interaction";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
-} from "../../libs/decorators/music";
+} from "../../decorators";
+import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
+import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Next extends Interaction {
+	description = "Skip current song and play next song from tracklist.";
+
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const player = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const metadata = await player!.next();
 		const message = createEmbed();
 
 		if (metadata) {
-			message.addField(
-				getFixture("music:NOW_PLAYING"),
-				getFixture("music:METADATA", metadata)
-			);
+			message.addFields({
+				name: "NOW PLAYING",
+				value: parseMetadata(metadata)
+			});
 		} else {
-			message.setDescription(getFixture("music:LAST_SONG"));
+			message.setDescription("This is the last song in the player.");
 		}
 
 		return interaction.editReply({ embeds: [message] });

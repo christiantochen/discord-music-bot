@@ -3,6 +3,8 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Help extends Interaction {
+	description = "Display default information.";
+
 	async execute(interaction: CommandInteraction) {
 		const message = createEmbed({ title: "HELP" }).setDescription(
 			`

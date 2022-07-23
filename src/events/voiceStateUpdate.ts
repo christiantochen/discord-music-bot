@@ -8,12 +8,16 @@ export default class VoiceStateUpdate extends Event {
 	async execute(oldState: VoiceState, newState: VoiceState): Promise<void> {
 		// if before is 1 member and increased to 2 member
 		// check and clear player timeout
-		if (newState.channel && newState.channel?.members.size === 2) {
+		if (
+			newState.channel?.members.size &&
+			newState.channel?.members.size === 2
+		) {
 			const player = this.client.musics.get(newState.member?.guild.id!);
+
 			// Only clear if status is playing
 			// because there's no point on clearing it's timeout when the player itself is idle
 			if (player?.state.status === AudioPlayerStatus.Playing) {
-				this.client.log.info("Not alone anymore", "clear timeout");
+				console.log("Not alone anymore", "clear timeout");
 				player?.clearTimeout();
 			}
 		}
@@ -23,7 +27,7 @@ export default class VoiceStateUpdate extends Event {
 			// and the last member is the bot itself
 			// set timeout for player to disconnect
 			if (lastMember?.user.id === this.client.user?.id) {
-				this.client.log.info("alone", "set self timeout");
+				console.log("alone", "set self timeout");
 				this.client.musics.get(lastMember?.guild.id!)?.setTimeout();
 			}
 		}
@@ -33,7 +37,7 @@ export default class VoiceStateUpdate extends Event {
 			newState.member?.user.id === this.client.user?.id &&
 			!newState.member?.voice.channel
 		) {
-			this.client.log.info("disconnected");
+			console.log("disconnected");
 			this.client.musics.delete(newState.member?.guild.id!);
 		}
 	}

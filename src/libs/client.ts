@@ -1,29 +1,26 @@
-import { Client, Intents } from "discord.js";
+import { Client as DiscordClient, GatewayIntentBits } from "discord.js";
 import EventHandler from "../handlers/eventHandler";
-import MusicHandler from "../handlers/musicHandler";
-import { Logger } from "tslog";
-import Database from "./database";
-import SettingHandler from "../handlers/settingHandler";
 import InteractionHandler from "../handlers/interactionHandler";
+import MusicHandler from "../handlers/musicHandler";
+import SettingHandler from "../handlers/settingHandler";
+import Database from "./database";
 
-export default class BotClient extends Client {
-	public log: Logger = new Logger();
+export default class Client extends DiscordClient {
+	public caches = {};
+	
 	public database = new Database(this);
 	public settings = new SettingHandler(this);
-
-	public interactions = new InteractionHandler(this);
 	public events = new EventHandler(this);
+	public interactions = new InteractionHandler(this);
 	public musics = new MusicHandler(this);
-
-	public caches = {};
 
 	constructor() {
 		super({
 			intents: [
-				Intents.FLAGS.GUILDS,
-				Intents.FLAGS.GUILD_MESSAGES,
-				Intents.FLAGS.GUILD_PRESENCES,
-				Intents.FLAGS.GUILD_VOICE_STATES
+				GatewayIntentBits.Guilds,
+				GatewayIntentBits.GuildMessages,
+				GatewayIntentBits.GuildPresences,
+				GatewayIntentBits.GuildVoiceStates
 			]
 		});
 

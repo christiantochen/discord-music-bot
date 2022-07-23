@@ -1,4 +1,4 @@
-import Collection from "@discordjs/collection";
+import { Collection } from "discord.js";
 import BotClient from "../libs/client";
 import Database from "../libs/database";
 import { GuildSettings } from "../libs/entities/GuildSettings";

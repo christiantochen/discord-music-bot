@@ -1,20 +1,18 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types";
-import BotClient from "../client";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+import Client from "../client";
 
 export default class Interaction {
-	readonly client: BotClient;
+	readonly client: Client;
 	readonly name: string;
-	readonly description: string = "No description provided.";
 
+	description: string = "No description provided.";
 	options: any[] = [];
-	default_permission: boolean | undefined;
+	dmPermission: boolean | undefined;
 
-	constructor(client: BotClient, name: string, description: string) {
+	constructor(client: Client, name: string) {
 		this.client = client;
 		this.name = name;
-
-		if (description.length > 0) this.description = description;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -27,8 +25,7 @@ export default class Interaction {
 			.setName(this.name)
 			.setDescription(this.description!);
 
-		if (this.default_permission !== undefined)
-			command.setDefaultPermission(this.default_permission);
+		command.setDMPermission(this.dmPermission);
 
 		this.options.forEach((option) => {
 			command.options.push(option);

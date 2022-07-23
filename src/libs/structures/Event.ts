@@ -1,11 +1,11 @@
-import BotClient from "../client";
+import Client from "../client";
 
 export default class Event {
-	readonly client: BotClient;
+	readonly client: Client;
 	readonly name: string;
 	once = false;
 
-	constructor(client: BotClient, name: string) {
+	constructor(client: Client, name: string) {
 		this.client = client;
 		this.name = name;
 	}

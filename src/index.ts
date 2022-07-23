@@ -1,6 +1,11 @@
+import { generateDependencyReport } from "@discordjs/voice";
 import dotenv from "dotenv";
-import BotClient from "./libs/client";
+import Client from "./libs/client";
 
 dotenv.config();
 
-new BotClient();
+const client = new Client();
+
+client.once("ready", () => {
+	console.log(generateDependencyReport());
+});

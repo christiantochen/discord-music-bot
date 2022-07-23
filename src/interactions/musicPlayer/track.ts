@@ -1,40 +1,42 @@
 import { SlashCommandNumberOption } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { getFixture } from "../../libs/fixtures";
-import Interaction from "../../libs/structures/Interaction";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
-} from "../../libs/decorators/music";
+} from "../../decorators";
+import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
+import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Track extends Interaction {
+	description = "Play track based on input number.";
 	options = [
 		new SlashCommandNumberOption()
-			.setName(getFixture("music/track:OPTION_NUMBER"))
-			.setDescription(getFixture("music/track:OPTION_NUMBER_DESCRIPTION"))
+			.setName("number")
+			.setDescription("Enter your track number.")
 			.setRequired(true)
 	];
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
-		const player = this.client.musics.getOrCreate(interaction.guildId);
+		const player = this.client.musics.getOrCreate(interaction.guildId!);
 
-		const trackNo = interaction.options.getNumber(this.options[0].name, true);
+		const trackNo = interaction.options.get(this.options[0].name, true)
+			.value as number;
 		const metadata = await player!.skip(trackNo);
 
 		const message = createEmbed();
 
 		if (metadata) {
-			message.addField(
-				getFixture("music:NOW_PLAYING"),
-				getFixture("music:METADATA", metadata)
-			);
+			message.addFields({
+				name: "NOW PLAYING",
+				value: parseMetadata(metadata)
+			});
 		} else if (trackNo) {
-			message.setDescription(getFixture("music/track:ERROR", { trackNo }));
+			message.setDescription(`Player have less than ${trackNo} tracks.`);
 		} else {
-			message.setDescription(getFixture("music:LAST_SONG"));
+			message.setDescription("This is the last song in the player.");
 		}
 
 		return interaction.editReply({ embeds: [message] });

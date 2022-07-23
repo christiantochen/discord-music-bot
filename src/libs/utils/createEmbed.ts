@@ -1,8 +1,6 @@
-import { APIEmbed } from "discord-api-types";
-import { MessageEmbed, MessageEmbedOptions } from "discord.js";
+import { APIEmbed } from "discord-api-types/v9";
+import { EmbedBuilder, EmbedData } from "discord.js";
 
-export default function createEmbed(
-	data?: MessageEmbed | MessageEmbedOptions | APIEmbed
-) {
-	return new MessageEmbed(data).setColor(0x00adff);
+export default function createEmbed(data?: EmbedData | APIEmbed) {
+	return new EmbedBuilder(data).setColor(0x00adff);
 }

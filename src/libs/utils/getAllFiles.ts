@@ -14,7 +14,9 @@ const getAllFiles = (dirPath: string, arrayOfFiles?: any[]): any[] => {
 		}
 	});
 
-	return arrayOfFiles;
+	return arrayOfFiles.filter((file) =>
+		file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
+	);
 };
 
 export default getAllFiles;

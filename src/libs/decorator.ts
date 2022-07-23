@@ -1,5 +1,5 @@
 import { CommandInteraction } from "discord.js";
-import createEmbed from "../utils/createEmbed";
+import createEmbed from "./utils/createEmbed";
 
 export default function decorator<
 	T extends (interaction: CommandInteraction) => Promise<string | undefined>
