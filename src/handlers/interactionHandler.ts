@@ -24,13 +24,11 @@ export default class InteractionHandler extends Collection<
 		const folder = "interactions";
 		const path = join(__dirname, "..", folder);
 
-		const files = getAllFiles(path).filter((file) =>
-			file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
-		);
+		const files = getAllFiles(path);
 
 		files.forEach((file) => {
 			const interactionClass = ((r) => r.default || r)(require(file));
-			const interactionFiles = file.split("\\");
+			const interactionFiles = file.split("/");
 			const fileName =
 				interactionFiles[interactionFiles.length - 1].split(".")[0];
 

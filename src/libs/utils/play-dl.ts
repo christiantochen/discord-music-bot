@@ -21,6 +21,8 @@ export const getAudioMetadata = async (
 		const { video_details } = await play.video_basic_info(query);
 		return video_details;
 	}
+
+	return;
 };
 
 export const createAudio = async (

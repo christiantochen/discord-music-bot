@@ -1,6 +1,6 @@
 {
 	"name": "discord-music-bot",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Discord Music Bot",
 	"license": "MIT",
 	"main": "dist/index.js",
@@ -21,10 +21,10 @@
 		"url": "https://github.com/christiantochen/discord-music-bot/issues"
 	},
 	"scripts": {
-		"build": "./node_modules/typescript/bin/tsc",
+		"build": "tsc -p .",
 		"build:clean": "git clean -d -x -e node_modules -e .env -f && npm run build",
-		"build:watch": "./node_modules/typescript/bin/tsc --watch",
-		"start": "cross-env BABEL_ENV=production NODE_ENV=production node .",
+		"build:watch": "tsc -p . --watch",
+		"start": "node ./dist/index.js",
 		"dev": "nodemon ./src/index.ts",
 		"lint": "eslint . --ext .ts --ignore-path .gitignore",
 		"lint:fix": "eslint . --ext .ts --ignore-path .gitignore --fix",
@@ -52,6 +52,7 @@
 		"typescript": "^4.5.2"
 	},
 	"engines": {
-		"node": ">=16.6.0"
+		"node": "16.14.0",
+		"npm": "8.3.1"
 	}
 }

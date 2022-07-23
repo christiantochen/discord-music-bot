@@ -15,7 +15,7 @@ export default function decorator<
 				});
 			}
 
-			await method.call(this, interaction);
+			return method.call(this, interaction);
 		};
 	};
 }

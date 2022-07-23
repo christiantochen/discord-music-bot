@@ -22,11 +22,13 @@ export default class EventHandler extends Collection<string, Event> {
 
 		files.forEach((file) => {
 			const eventClass = ((r) => r.default || r)(require(file));
-			const eventFiles = file.split("\\");
+			const eventFiles = file.split("/");
 			const eventName = eventFiles[eventFiles.length - 1].split(".")[0];
 			const event: Event = new eventClass(this.client, eventName);
 
 			this.set(event.name, event);
+
+			console.log(event.name);
 
 			this.client[event.once ? "once" : "on"](
 				event.name,
