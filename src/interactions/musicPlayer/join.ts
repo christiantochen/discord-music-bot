@@ -9,6 +9,7 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Join extends Interaction {
+	name = "join";
 	description = "Bot will join voice channel.";
 
 	@isMemberInVoiceChannel()

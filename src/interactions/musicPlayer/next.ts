@@ -8,6 +8,7 @@ import createEmbed from "../../libs/utils/createEmbed";
 import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Next extends Interaction {
+	name = "next";
 	description = "Skip current song and play next song from tracklist.";
 
 	@isMemberInVoiceChannel()

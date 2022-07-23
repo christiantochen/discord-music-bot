@@ -7,6 +7,7 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Stop extends Interaction {
+	name = "stop";
 	description = "Stop the music player.";
 
 	@isMemberInVoiceChannel()

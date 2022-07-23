@@ -3,6 +3,7 @@ import Client from "../libs/client";
 import Event from "../libs/structures/Event";
 
 export default class Ready extends Event {
+	name = "ready";
 	once = true;
 
 	async execute(client: Client): Promise<void> {

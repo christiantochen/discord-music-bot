@@ -3,6 +3,7 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Ping extends Interaction {
+	name = "ping";
 	description = "A check to see if `bot` is able to respond.";
 
 	async execute(interaction: CommandInteraction) {

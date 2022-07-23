@@ -15,7 +15,9 @@ import {
 import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Play extends Interaction {
-	description = "Search for a track on YouTube and add the first one on the search list to track."
+	name = "play";
+	description =
+		"Search for a track on YouTube and add the first one on the search list to track.";
 	options = [
 		new SlashCommandStringOption()
 			.setName("query")

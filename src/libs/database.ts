@@ -6,16 +6,16 @@ import {
 	ModifyResult,
 	DeleteResult
 } from "mongodb";
-import BotClient from "./client";
+import Client from "./client";
 
 export type DatabaseCollection = "guilds";
 
 export default class Database {
-	readonly client: BotClient;
+	readonly client: Client;
 	private mongo: MongoClient;
 	private db: Db | undefined;
 
-	constructor(client: BotClient) {
+	constructor(client: Client) {
 		this.client = client;
 		this.mongo = new MongoClient(process.env.MONGO_URI!);
 		this.init();

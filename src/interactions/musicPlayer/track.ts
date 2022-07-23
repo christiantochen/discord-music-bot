@@ -9,6 +9,7 @@ import createEmbed from "../../libs/utils/createEmbed";
 import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Track extends Interaction {
+	name = "track";
 	description = "Play track based on input number.";
 	options = [
 		new SlashCommandNumberOption()

@@ -28,11 +28,7 @@ export default class InteractionHandler extends Collection<
 
 		files.forEach((file) => {
 			const interactionClass = ((r) => r.default || r)(require(file));
-			const interactionFiles = file.split("/");
-			const fileName =
-				interactionFiles[interactionFiles.length - 1].split(".")[0];
-
-			const command: Interaction = new interactionClass(this.client, fileName);
+			const command: Interaction = new interactionClass(this.client);
 
 			this.set(command.name, command);
 		});

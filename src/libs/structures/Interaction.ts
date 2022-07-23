@@ -4,15 +4,13 @@ import Client from "../client";
 
 export default class Interaction {
 	readonly client: Client;
-	readonly name: string;
-
+	name: string = "";
 	description: string = "No description provided.";
 	options: any[] = [];
 	dmPermission: boolean | undefined;
 
-	constructor(client: Client, name: string) {
+	constructor(client: Client) {
 		this.client = client;
-		this.name = name;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

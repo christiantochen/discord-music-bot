@@ -8,6 +8,7 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Loop extends Interaction {
+	name = "loop";
 	description = "Change the loop mode.";
 	options = [
 		new SlashCommandStringOption()

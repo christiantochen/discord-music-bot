@@ -2,12 +2,11 @@ import Client from "../client";
 
 export default class Event {
 	readonly client: Client;
-	readonly name: string;
-	once = false;
+	name: string = "";
+	once: boolean = false;
 
-	constructor(client: Client, name: string) {
+	constructor(client: Client) {
 		this.client = client;
-		this.name = name;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

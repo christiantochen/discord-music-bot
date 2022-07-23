@@ -8,6 +8,7 @@ import createEmbed from "../../libs/utils/createEmbed";
 import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Prev extends Interaction {
+	name = "prev";
 	description = "Play previous queue from current track.";
 
 	@isMemberInVoiceChannel()

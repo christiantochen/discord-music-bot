@@ -7,6 +7,7 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Leave extends Interaction {
+	name = "leave";
 	description = "Bot will leave voice channel.";
 
 	@isMemberInVoiceChannel()

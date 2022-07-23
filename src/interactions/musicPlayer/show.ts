@@ -9,6 +9,7 @@ import {
 import parseMetadata from "../../libs/utils/parseMetadata";
 
 export default class Show extends Interaction {
+	name = "show";
 	description = "Display the queue of the current tracks.";
 	pageLimit = 5;
 	options = [

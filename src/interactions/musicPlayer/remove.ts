@@ -8,6 +8,7 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../libs/utils/createEmbed";
 
 export default class Remove extends Interaction {
+	name = "remove";
 	options = [
 		new SlashCommandNumberOption()
 			.setName("number")
