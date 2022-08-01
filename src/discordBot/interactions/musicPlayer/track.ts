@@ -5,8 +5,8 @@ import {
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
-import parseMetadata from "../../libs/utils/parseMetadata";
+import createEmbed from "../../utils/createEmbed";
+import parseMetadata from "../../utils/parseMetadata";
 
 export default class Track extends Interaction {
 	name = "track";

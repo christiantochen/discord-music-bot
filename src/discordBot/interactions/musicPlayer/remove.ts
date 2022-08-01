@@ -5,7 +5,7 @@ import {
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
+import createEmbed from "../../utils/createEmbed";
 
 export default class Remove extends Interaction {
 	name = "remove";

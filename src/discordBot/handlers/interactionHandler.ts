@@ -1,18 +1,18 @@
-import Client from "../libs/client";
+import DiscordClient from "../client";
 import { join } from "path";
 import Interaction from "../libs/structures/Interaction";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import getAllFiles from "../libs/utils/getAllFiles";
+import getAllFiles from "../utils/getAllFiles";
 import { Collection } from "discord.js";
 
 export default class InteractionHandler extends Collection<
 	string,
 	Interaction
 > {
-	client: Client;
+	client: DiscordClient;
 
-	constructor(client: Client) {
+	constructor(client: DiscordClient) {
 		super();
 
 		this.client = client;

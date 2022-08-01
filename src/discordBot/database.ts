@@ -6,17 +6,14 @@ import {
 	ModifyResult,
 	DeleteResult
 } from "mongodb";
-import Client from "./client";
 
 export type DatabaseCollection = "guilds";
 
 export default class Database {
-	readonly client: Client;
 	private mongo: MongoClient;
 	private db: Db | undefined;
 
-	constructor(client: Client) {
-		this.client = client;
+	constructor() {
 		this.mongo = new MongoClient(process.env.MONGO_URI!);
 		this.init();
 	}

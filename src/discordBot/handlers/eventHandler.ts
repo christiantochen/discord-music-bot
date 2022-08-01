@@ -1,13 +1,13 @@
-import Client from "../libs/client";
+import DiscordClient from "../client";
 import Event from "../libs/structures/Event";
 import { join } from "path";
-import getAllFiles from "../libs/utils/getAllFiles";
+import getAllFiles from "../utils/getAllFiles";
 import { Collection } from "discord.js";
 
 export default class EventHandler extends Collection<string, Event> {
-	readonly client: Client;
+	readonly client: DiscordClient;
 
-	constructor(client: Client) {
+	constructor(client: DiscordClient) {
 		super();
 
 		this.client = client;

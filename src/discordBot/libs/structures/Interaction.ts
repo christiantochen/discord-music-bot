@@ -1,15 +1,15 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
-import Client from "../client";
+import DiscordClient from "../../client";
 
 export default class Interaction {
-	readonly client: Client;
+	readonly client: DiscordClient;
 	name: string = "";
 	description: string = "No description provided.";
 	options: any[] = [];
 	dmPermission: boolean | undefined;
 
-	constructor(client: Client) {
+	constructor(client: DiscordClient) {
 		this.client = client;
 	}
 

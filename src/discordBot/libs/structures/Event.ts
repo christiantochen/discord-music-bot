@@ -1,11 +1,11 @@
-import Client from "../client";
+import DiscordClient from "../../client";
 
 export default class Event {
-	readonly client: Client;
+	readonly client: DiscordClient;
 	name: string = "";
 	once: boolean = false;
 
-	constructor(client: Client) {
+	constructor(client: DiscordClient) {
 		this.client = client;
 	}
 

@@ -1,15 +1,15 @@
 import { Collection } from "discord.js";
-import BotClient from "../libs/client";
-import Database from "../libs/database";
+import DiscordClient from "../client";
+import Database from "../database";
 import { GuildSettings } from "../libs/entities/GuildSettings";
 
 const collection = "guilds";
 
 export default class SettingHandler extends Collection<string, GuildSettings> {
-	readonly client: BotClient;
+	readonly client: DiscordClient;
 	private readonly database: Database | undefined;
 
-	constructor(client: BotClient) {
+	constructor(client: DiscordClient) {
 		super();
 
 		this.client = client;

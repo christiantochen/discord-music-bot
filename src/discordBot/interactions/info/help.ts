@@ -1,6 +1,6 @@
 import { CommandInteraction } from "discord.js";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
+import createEmbed from "../../utils/createEmbed";
 
 export default class Help extends Interaction {
   name = "help";

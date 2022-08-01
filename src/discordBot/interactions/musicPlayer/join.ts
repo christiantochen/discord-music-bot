@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import { isMemberInVoiceChannel } from "../../decorators";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
+import createEmbed from "../../utils/createEmbed";
 
 export default class Join extends Interaction {
 	name = "join";

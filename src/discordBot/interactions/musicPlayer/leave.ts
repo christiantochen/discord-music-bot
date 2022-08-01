@@ -4,20 +4,21 @@ import {
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
+import createEmbed from "../../utils/createEmbed";
 
-export default class Stop extends Interaction {
-	name = "stop";
-	description = "Stop the music player.";
+export default class Leave extends Interaction {
+	name = "leave";
+	description = "Bot will leave voice channel.";
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
-		player!.stop(true);
+
+		player!.disconnect();
 
 		return interaction.editReply({
-			embeds: [createEmbed({ description: "Music stop." })]
+			embeds: [createEmbed({ description: "Time to clean up." })]
 		});
 	}
 }

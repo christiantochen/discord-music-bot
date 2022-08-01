@@ -5,14 +5,14 @@ import {
 	TextChannel,
 	VoiceChannel
 } from "discord.js";
-import { getAudioMetadata } from "../../libs/utils/play-dl";
+import { getAudioMetadata } from "../../utils/play-dl";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
+import createEmbed from "../../utils/createEmbed";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
-import parseMetadata from "../../libs/utils/parseMetadata";
+import parseMetadata from "../../utils/parseMetadata";
 
 export default class Play extends Interaction {
 	name = "play";

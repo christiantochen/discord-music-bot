@@ -1,5 +1,5 @@
 import { CommandInteraction, GuildMember } from "discord.js";
-import decorator from "../libs/decorator";
+import decorator from "../decorator";
 
 export function isMemberInVoiceChannel(): any {
 	return decorator(async (interaction: CommandInteraction) => {

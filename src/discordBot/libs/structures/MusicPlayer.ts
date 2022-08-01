@@ -6,15 +6,15 @@ import {
 	VoiceConnection
 } from "@discordjs/voice";
 import { Message, TextChannel, VoiceChannel } from "discord.js";
-import BotClient from "../client";
-import createEmbed from "../utils/createEmbed";
-import parseMetadata from "../utils/parseMetadata";
-import { createAudio } from "../utils/play-dl";
+import DiscordClient from "../../client";
+import createEmbed from "../../utils/createEmbed";
+import parseMetadata from "../../utils/parseMetadata";
+import { createAudio } from "../../utils/play-dl";
 
 export type LoopMode = "off" | "current" | "all";
 
 export default class MusicPlayer extends AudioPlayer {
-	readonly client: BotClient;
+	readonly client: DiscordClient;
 	readonly guildId: string;
 	channelId: string | undefined;
 	voiceChannelId: string | undefined;
@@ -28,7 +28,7 @@ export default class MusicPlayer extends AudioPlayer {
 	private timeout: NodeJS.Timeout | undefined;
 	private lastMessage: Message | undefined;
 
-	constructor(client: BotClient, guildId: string) {
+	constructor(client: DiscordClient, guildId: string) {
 		super({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
 		this.client = client;
 		this.guildId = guildId;

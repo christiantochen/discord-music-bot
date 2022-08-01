@@ -1,12 +1,12 @@
 import { CommandInteraction } from "discord.js";
 import Interaction from "../../libs/structures/Interaction";
-import createEmbed from "../../libs/utils/createEmbed";
+import createEmbed from "../../utils/createEmbed";
 import { SlashCommandIntegerOption } from "@discordjs/builders";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
-import parseMetadata from "../../libs/utils/parseMetadata";
+import parseMetadata from "../../utils/parseMetadata";
 
 export default class Show extends Interaction {
 	name = "show";
