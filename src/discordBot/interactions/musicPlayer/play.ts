@@ -77,25 +77,28 @@ export default class Play extends Interaction {
 	async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(stopButton);
+		let query: string | undefined;
+		let metadata: YouTubeVideo | undefined;
 
 		if (interaction.isButton()) {
 			const buttonInteraction = interaction as ButtonInteraction<CacheType>;
-			await player.skip(player.trackAt);
-			return buttonInteraction.update({ components: [row] });
+			await buttonInteraction.deferUpdate();
+		} else {
+			query = interaction.options.get(this.options[0].name)?.value as string;
+
+			const member = interaction.member as GuildMember;
+			const memberChannel = interaction.channel as TextChannel;
+			const voiceChannel = member.voice.channel as VoiceChannel;
+			await player.connect(voiceChannel, memberChannel);
 		}
-
-		const member = interaction.member as GuildMember;
-		const query = interaction.options.get(this.options[0].name)
-			?.value as string;
-		let metadata: YouTubeVideo | undefined;
-
-		const memberChannel = interaction.channel as TextChannel;
-		const voiceChannel = member.voice.channel as VoiceChannel;
-		await player.connect(voiceChannel, memberChannel);
 
 		if (query) {
 			metadata = await getAudioMetadata(query);
-		} else if (player.tracks.length > 0) metadata = player.tracks[0];
+		} else if (player.tracks.length > 0) {
+			const trackAt =
+				(player.trackAt > 0 ? player.trackAt : player.tracks.length) - 1;
+			metadata = player.tracks[trackAt];
+		}
 
 		if (!metadata) {
 			const message = createEmbed({
