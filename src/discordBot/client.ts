@@ -8,13 +8,13 @@ import Database from "./database";
 export default class DiscordClient extends Client {
 	public caches = {};
 
-	public readonly database: Database;
+	public readonly database: Database = new Database();
 	public settings = new SettingHandler(this);
 	public events = new EventHandler(this);
 	public interactions = new InteractionHandler(this);
 	public musics = new MusicHandler(this);
 
-	constructor(database: Database) {
+	constructor() {
 		super({
 			intents: [
 				GatewayIntentBits.Guilds,
@@ -24,7 +24,6 @@ export default class DiscordClient extends Client {
 			]
 		});
 
-		this.database = database;
 		this.login(process.env.TOKEN!);
 	}
 }

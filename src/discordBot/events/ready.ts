@@ -19,7 +19,7 @@ export default class Ready extends Event {
 		});
 
 		console.log(
-			`${this.client.user?.username} is ready to serve ${this.client.guilds.cache.size} guilds on ${process.env.NODE_ENV}.`
+			`${this.client.user?.username} is ready to serve ${this.client.guilds.cache.size} guilds.`
 		);
 	}
 }

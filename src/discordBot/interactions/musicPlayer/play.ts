@@ -1,6 +1,13 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
 import {
+	ActionRowBuilder,
+	APIEmbedField,
+	ButtonBuilder,
+	ButtonInteraction,
+	ButtonStyle,
+	CacheType,
 	CommandInteraction,
+	EmbedBuilder,
 	GuildMember,
 	TextChannel,
 	VoiceChannel
@@ -12,7 +19,47 @@ import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
-import parseMetadata from "../../utils/parseMetadata";
+import { YouTubeVideo } from "play-dl";
+
+const createEmbedFromYTVideo = ({
+	channel,
+	thumbnails,
+	...metadata
+}: YouTubeVideo): EmbedBuilder => {
+	let thumbnail;
+	let fields: APIEmbedField[] = [];
+	let footer;
+
+	if (channel && channel.name) {
+		fields.push(
+			{
+				name: "Currently Playing",
+				value: `[${metadata.title}](${metadata.url})`
+			},
+			{
+				name: "Duration",
+				value: metadata.durationRaw,
+				inline: true
+			},
+			{
+				name: "by",
+				value: `[${channel.name}](${channel.url})`,
+				inline: true
+			}
+		);
+	}
+
+	if (thumbnails && thumbnails.length > 0) {
+		thumbnail = { url: thumbnails[thumbnails.length - 1].url };
+	}
+
+	return createEmbed({ thumbnail, fields, footer });
+};
+
+const stopButton = new ButtonBuilder()
+	.setCustomId("stop")
+	.setLabel("Stop")
+	.setStyle(ButtonStyle.Danger);
 
 export default class Play extends Interaction {
 	name = "play";
@@ -22,37 +69,44 @@ export default class Play extends Interaction {
 		new SlashCommandStringOption()
 			.setName("query")
 			.setDescription("Enter keyword or youtube url.")
-			.setRequired(true)
+			.setRequired(false)
 	];
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
 	async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
-		const member = interaction.member as GuildMember;
-		const message = createEmbed();
-		const query = interaction.options.get(this.options[0].name, true)
-			.value as string;
-		const metadata = await getAudioMetadata(query);
+		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(stopButton);
 
-		if (!metadata) {
-			message.setDescription(`No source found for **${query}**`);
-			return interaction.editReply({ embeds: [message] });
+		if (interaction.isButton()) {
+			const buttonInteraction = interaction as ButtonInteraction<CacheType>;
+			await player.skip(player.trackAt);
+			return buttonInteraction.update({ components: [row] });
 		}
+
+		const member = interaction.member as GuildMember;
+		const query = interaction.options.get(this.options[0].name)
+			?.value as string;
+		let metadata: YouTubeVideo | undefined;
 
 		const memberChannel = interaction.channel as TextChannel;
 		const voiceChannel = member.voice.channel as VoiceChannel;
 		await player.connect(voiceChannel, memberChannel);
 
-		const trackAt = await player.add(metadata);
-		const title = trackAt
-			? `New track added at position #${trackAt}`
-			: "NOW PLAYING";
-		message.addFields({
-			name: title,
-			value: parseMetadata(metadata)
-		});
+		if (query) {
+			metadata = await getAudioMetadata(query);
+		} else if (player.tracks.length > 0) metadata = player.tracks[0];
 
-		return interaction.editReply({ embeds: [message] });
+		if (!metadata) {
+			const message = createEmbed({
+				description: `No source found${query ? ` for ${query}` : ""}.`
+			});
+			return interaction.editReply({ embeds: [message] });
+		}
+
+		await player.play(metadata);
+
+		const message = createEmbedFromYTVideo(metadata);
+		return interaction.editReply({ embeds: [message], components: [row] });
 	}
 }

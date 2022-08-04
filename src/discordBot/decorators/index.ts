@@ -14,8 +14,7 @@ export function IsMemberOnSameVoiceChannel(): any {
 		const member = interaction.member as GuildMember;
 		const bot = interaction.guild?.members.me;
 
-		if (!bot?.voice.channelId) return "Bot has yet join any voice channel!";
-		if (member.voice.channelId !== bot?.voice.channelId)
+		if (bot?.voice.channelId && member.voice.channelId !== bot?.voice.channelId)
 			return "You need to be in the same voice channel with me to execute this command!";
 
 		return;

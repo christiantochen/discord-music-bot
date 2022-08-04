@@ -66,6 +66,15 @@ export default class MusicPlayer extends AudioPlayer {
 
 	async play(metadata: any): Promise<any> {
 		super.play(await createAudio(metadata));
+
+		this.trackAt =
+			this.tracks.findIndex((track) => track.id === metadata.id) + 1;
+
+		if (this.trackAt === 0) {
+			this.tracks.push(metadata);
+			this.trackAt = this.tracks.length;
+		}
+
 		return metadata;
 	}
 
@@ -125,21 +134,9 @@ export default class MusicPlayer extends AudioPlayer {
 		return removedTrack?.length > 0;
 	}
 
-	async add(metadata: any): Promise<any | undefined> {
+	async add(metadata: any): Promise<void> {
 		this.tracks.push(metadata);
-		await this.save();
-
-		// if first time or player currently not playing anything
-		// then immediately play the newly added track
-		if (
-			this.tracks.length === 1 ||
-			this.state.status === AudioPlayerStatus.Idle
-		) {
-			this.trackAt = this.tracks.length;
-			await this.play(metadata);
-		}
-
-		return this.tracks.length;
+		this.save();
 	}
 
 	setTimeout() {
