@@ -1,4 +1,4 @@
-import { LoopMode } from "../structures/MusicPlayer";
+import type { LoopMode } from "../structures/MusicPlayer";
 
 export interface GuildSettings {
 	_id: string;

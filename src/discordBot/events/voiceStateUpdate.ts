@@ -1,12 +1,12 @@
 import { AudioPlayerStatus } from "@discordjs/voice";
-import { VoiceState } from "discord.js";
+import type { VoiceState } from "discord.js";
 import Event from "../libs/structures/Event";
 
 export default class VoiceStateUpdate extends Event {
-	name = "voiceStateUpdate";
+	override name = "voiceStateUpdate";
 	// oldState: someone disconnected
 	// newState: someone connected
-	async execute(oldState: VoiceState, newState: VoiceState): Promise<void> {
+	override async execute(oldState: VoiceState, newState: VoiceState): Promise<void> {
 		// if a user join a voice channel
 		// if voice channel members become to 2 member
 		if (newState.channel?.members.size === 2) {

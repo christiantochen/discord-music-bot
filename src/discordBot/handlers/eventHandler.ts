@@ -1,5 +1,5 @@
-import DiscordClient from "../client";
-import Event from "../libs/structures/Event";
+import type DiscordClient from "../client";
+import type Event from "../libs/structures/Event";
 import { join } from "path";
 import getAllFiles from "../utils/getAllFiles";
 import { Collection } from "discord.js";

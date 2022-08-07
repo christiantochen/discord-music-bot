@@ -9,11 +9,11 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 
 export default class Join extends Interaction {
-	name = "join";
-	description = "Bot will join voice channel.";
+	override name = "join";
+	override description = "Bot will join voice channel.";
 
 	@isMemberInVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const member = interaction.member as GuildMember;
 		const memberChannel = interaction.channel as TextChannel;

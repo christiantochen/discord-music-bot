@@ -19,12 +19,12 @@ const playButton = new ButtonBuilder()
 	.setStyle(ButtonStyle.Primary);
 
 export default class Stop extends Interaction {
-	name = "stop";
-	description = "Stop the music player.";
+	override name = "stop";
+	override description = "Stop the music player.";
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		player!.stop(true);
 

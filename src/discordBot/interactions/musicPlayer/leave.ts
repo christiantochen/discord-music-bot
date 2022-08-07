@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
@@ -7,12 +7,12 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 
 export default class Leave extends Interaction {
-	name = "leave";
-	description = "Bot will leave voice channel.";
+	override name = "leave";
+	override description = "Bot will leave voice channel.";
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 
 		player!.disconnect();

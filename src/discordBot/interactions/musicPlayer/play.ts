@@ -1,7 +1,7 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
 import {
 	ActionRowBuilder,
-	APIEmbedField,
+	APIEmbed,
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
@@ -19,19 +19,17 @@ import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
 } from "../../decorators";
-import { YouTubeVideo } from "play-dl";
+import type { YouTubeVideo } from "play-dl";
 
 const createEmbedFromYTVideo = ({
 	channel,
 	thumbnails,
 	...metadata
 }: YouTubeVideo): EmbedBuilder => {
-	let thumbnail;
-	let fields: APIEmbedField[] = [];
-	let footer;
+	const embed: APIEmbed = {};
 
 	if (channel && channel.name) {
-		fields.push(
+		embed.fields = [
 			{
 				name: "Currently Playing",
 				value: `[${metadata.title}](${metadata.url})`
@@ -46,14 +44,14 @@ const createEmbedFromYTVideo = ({
 				value: `[${channel.name}](${channel.url})`,
 				inline: true
 			}
-		);
+		];
 	}
 
 	if (thumbnails && thumbnails.length > 0) {
-		thumbnail = { url: thumbnails[thumbnails.length - 1].url };
+		embed.thumbnail = { url: thumbnails[thumbnails.length - 1]!.url };
 	}
 
-	return createEmbed({ thumbnail, fields, footer });
+	return createEmbed(embed);
 };
 
 const stopButton = new ButtonBuilder()
@@ -62,10 +60,10 @@ const stopButton = new ButtonBuilder()
 	.setStyle(ButtonStyle.Danger);
 
 export default class Play extends Interaction {
-	name = "play";
-	description =
+	override name = "play";
+	override description =
 		"Search for a track on YouTube and add the first one on the search list to track.";
-	options = [
+	override options = [
 		new SlashCommandStringOption()
 			.setName("query")
 			.setDescription("Enter keyword or youtube url.")
@@ -74,7 +72,7 @@ export default class Play extends Interaction {
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(stopButton);
 		let query: string | undefined;
@@ -84,7 +82,7 @@ export default class Play extends Interaction {
 			const buttonInteraction = interaction as ButtonInteraction<CacheType>;
 			await buttonInteraction.deferUpdate();
 		} else {
-			query = interaction.options.get(this.options[0].name)?.value as string;
+			query = interaction.options.get(this.options[0]!.name)?.value as string;
 
 			const member = interaction.member as GuildMember;
 			const memberChannel = interaction.channel as TextChannel;

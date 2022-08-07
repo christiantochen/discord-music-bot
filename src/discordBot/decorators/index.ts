@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember } from "discord.js";
+import type { CommandInteraction, GuildMember } from "discord.js";
 import decorator from "../decorator";
 
 export function isMemberInVoiceChannel(): any {

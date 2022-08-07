@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import DiscordClient from "../client";
+import type DiscordClient from "../client";
 import MusicPlayer from "../libs/structures/MusicPlayer";
 
 export default class MusicHandler extends Collection<string, MusicPlayer> {

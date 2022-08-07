@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
@@ -8,12 +8,12 @@ import createEmbed from "../../utils/createEmbed";
 import parseMetadata from "../../utils/parseMetadata";
 
 export default class Next extends Interaction {
-	name = "next";
-	description = "Skip current song and play next song from tracklist.";
+	override name = "next";
+	override description = "Skip current song and play next song from tracklist.";
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const metadata = await player!.next();
 		const message = createEmbed();

@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 
@@ -46,9 +46,9 @@ import createEmbed from "../../utils/createEmbed";
 //   }
 
 export default class Ping extends Interaction {
-	name = "test";
+	override name = "test";
 
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const message = createEmbed({
 			color: 0x0099ff,
 			author: {

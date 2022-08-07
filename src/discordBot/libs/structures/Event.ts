@@ -1,4 +1,4 @@
-import DiscordClient from "../../client";
+import type DiscordClient from "../../client";
 
 export default class Event {
 	readonly client: DiscordClient;

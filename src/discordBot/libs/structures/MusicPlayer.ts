@@ -6,7 +6,7 @@ import {
 	VoiceConnection
 } from "@discordjs/voice";
 import { Message, TextChannel, VoiceChannel } from "discord.js";
-import DiscordClient from "../../client";
+import type DiscordClient from "../../client";
 import createEmbed from "../../utils/createEmbed";
 import parseMetadata from "../../utils/parseMetadata";
 import { createAudio } from "../../utils/play-dl";
@@ -64,7 +64,7 @@ export default class MusicPlayer extends AudioPlayer {
 		return this.save();
 	}
 
-	async play(metadata: any): Promise<any> {
+	override async play(metadata: any): Promise<any> {
 		super.play(await createAudio(metadata));
 
 		this.trackAt =
@@ -104,7 +104,7 @@ export default class MusicPlayer extends AudioPlayer {
 		return this.play(this.tracks[this.trackAt - 1]);
 	}
 
-	stop(force?: boolean | undefined): boolean {
+	override stop(force?: boolean | undefined): boolean {
 		this.stopCalled = true;
 		return super.stop(force);
 	}

@@ -1,5 +1,5 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
@@ -8,9 +8,9 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 
 export default class Loop extends Interaction {
-	name = "loop";
-	description = "Change the loop mode.";
-	options = [
+	override name = "loop";
+	override description = "Change the loop mode.";
+	override options = [
 		new SlashCommandStringOption()
 			.setName("mode")
 			.setDescription("select the mode.")
@@ -33,9 +33,9 @@ export default class Loop extends Interaction {
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
-		const mode = interaction.options.get(this.options[0].name, true)
+		const mode = interaction.options.get(this.options[0]!.name, true)
 			.value as string;
 		await player!.setLoop(mode);
 

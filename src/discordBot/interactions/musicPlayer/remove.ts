@@ -1,5 +1,5 @@
 import { SlashCommandNumberOption } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
@@ -8,8 +8,8 @@ import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 
 export default class Remove extends Interaction {
-	name = "remove";
-	options = [
+	override name = "remove";
+	override options = [
 		new SlashCommandNumberOption()
 			.setName("number")
 			.setDescription("Enter your track number.")
@@ -23,12 +23,12 @@ export default class Remove extends Interaction {
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const message = createEmbed();
-		const trackFrom = interaction.options.get(this.options[0].name, true)
+		const trackFrom = interaction.options.get(this.options[0]!.name, true)
 			.value as number;
-		const count = interaction.options.get(this.options[1].name)
+		const count = interaction.options.get(this.options[1]!.name)
 			?.value as number;
 		const { trackAt } = player;
 

@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 import { SlashCommandIntegerOption } from "@discordjs/builders";
@@ -9,24 +9,24 @@ import {
 import parseMetadata from "../../utils/parseMetadata";
 
 export default class Show extends Interaction {
-	name = "show";
-	description = "Display the queue of the current tracks.";
-	pageLimit = 5;
-	options = [
+	override name = "show";
+	override description = "Display the queue of the current tracks.";
+	override options = [
 		new SlashCommandIntegerOption()
 			.setName("page")
 			.setDescription("Page Number")
 	];
+	pageLimit = 5;
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const message = createEmbed();
 		const { tracks, trackAt, loop } = player;
 
 		const pageNumber =
-			(interaction.options.get(this.options[0].name)?.value as number) ?? 1;
+			(interaction.options.get(this.options[0]!.name)?.value as number) ?? 1;
 		const tracklist = this.generateTracklist(tracks, trackAt, pageNumber);
 
 		if (!tracklist)

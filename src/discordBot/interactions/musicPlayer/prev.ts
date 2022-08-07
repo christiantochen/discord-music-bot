@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
@@ -8,12 +8,12 @@ import createEmbed from "../../utils/createEmbed";
 import parseMetadata from "../../utils/parseMetadata";
 
 export default class Prev extends Interaction {
-	name = "prev";
-	description = "Play previous queue from current track.";
+	override name = "prev";
+	override description = "Play previous queue from current track.";
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 		const metadata = await player!.prev();
 		const message = createEmbed();

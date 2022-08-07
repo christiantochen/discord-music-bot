@@ -1,12 +1,12 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import Interaction from "../../libs/structures/Interaction";
 import createEmbed from "../../utils/createEmbed";
 
 export default class Help extends Interaction {
-  name = "help";
-	description = "Display default information.";
+  override name = "help";
+	override description = "Display default information.";
 
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const message = createEmbed({ title: "HELP" }).setDescription(
 			`
       **Play a music**

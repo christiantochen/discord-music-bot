@@ -1,5 +1,5 @@
 import { SlashCommandNumberOption } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import {
 	isMemberInVoiceChannel,
 	IsMemberOnSameVoiceChannel
@@ -9,9 +9,9 @@ import createEmbed from "../../utils/createEmbed";
 import parseMetadata from "../../utils/parseMetadata";
 
 export default class Track extends Interaction {
-	name = "track";
-	description = "Play track based on input number.";
-	options = [
+	override name = "track";
+	override description = "Play track based on input number.";
+	override options = [
 		new SlashCommandNumberOption()
 			.setName("number")
 			.setDescription("Enter your track number.")
@@ -20,10 +20,10 @@ export default class Track extends Interaction {
 
 	@isMemberInVoiceChannel()
 	@IsMemberOnSameVoiceChannel()
-	async execute(interaction: CommandInteraction) {
+	override async execute(interaction: CommandInteraction) {
 		const player = this.client.musics.getOrCreate(interaction.guildId!);
 
-		const trackNo = interaction.options.get(this.options[0].name, true)
+		const trackNo = interaction.options.get(this.options[0]!.name, true)
 			.value as number;
 		const metadata = await player!.skip(trackNo);
 

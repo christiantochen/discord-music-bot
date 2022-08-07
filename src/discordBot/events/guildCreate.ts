@@ -1,10 +1,10 @@
-import { Guild } from "discord.js";
+import type { Guild } from "discord.js";
 import Event from "../libs/structures/Event";
 
 export default class guildCreate extends Event {
-	name = "guildCreate";
+	override name = "guildCreate";
 
-	async execute(guild: Guild) {
+	override async execute(guild: Guild) {
 		console.log(guild);
 	}
 }

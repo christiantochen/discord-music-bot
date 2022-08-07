@@ -1,7 +1,7 @@
 import { Collection } from "discord.js";
-import DiscordClient from "../client";
-import Database from "../database";
-import { GuildSettings } from "../libs/entities/GuildSettings";
+import type DiscordClient from "../client";
+import type Database from "../database";
+import type { GuildSettings } from "../libs/entities/GuildSettings";
 
 const collection = "guilds";
 

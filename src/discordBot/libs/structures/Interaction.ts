@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
-import DiscordClient from "../../client";
+import type { RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+import type DiscordClient from "../../client";
 
 export default class Interaction {
 	readonly client: DiscordClient;
